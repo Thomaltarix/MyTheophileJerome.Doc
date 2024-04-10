@@ -1,6 +1,8 @@
-module Main (main) where
+import System.Environment (getArgs)
 
-import Lib
+import MyPandoc
 
 main :: IO ()
-main = someFunc
+main = do
+    args <- getArgs
+    myPandoc args
