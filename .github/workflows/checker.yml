@@ -1,0 +1,83 @@
+name: Verification
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check_coding_style:
+    name: Check coding style
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+
+    steps:
+      - name: Check code
+        uses: actions/checkout@v3
+
+      - name: Run coding style checker
+        run: |
+          check.sh $(pwd) $(pwd)
+
+      - name: Display coding style errors
+        run: |
+          input=$(pwd)/coding-style-reports.log
+          while read line
+          do
+              error_type=$(echo $line | cut -d ":" -f 3 | cut -d " " -f 2)
+              file_name=$(echo $line | cut -d ":" -f 1)
+              file_path=$(echo $line | cut -d ':' -f 1)
+              error_line=$(echo $line | cut -d ':' -f 2)
+              error_code=$(echo $line | cut -d ':' -f 4)
+              echo "::error file=$file_name,line=$error_line,title=$error_type coding style error :: $error_code"
+          done < $input
+          if [ -s $input ]
+          then
+              cat $input
+              exit 1
+          fi
+
+  check_compilation:
+    name: Check compilation
+    needs: [check_coding_style]
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Permissions bug workaround
+        run: "chown -R $(id -un):$(id -gn) ~"
+
+      - name: Git bug workaround
+        run: "chown -R $(id -un):$(id -gn) ."
+
+      - name: Run compilation
+        run: |
+          make
+
+  run_tests:
+    name: Run tests
+    needs: [check_compilation]
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+
+    steps:
+      - name: Check code
+        uses: actions/checkout@v3
+
+      - name: Permissions bug workaround
+        run: "chown -R $(id -un):$(id -gn) ~"
+
+      - name: Git bug workaround
+        run: "chown -R $(id -un):$(id -gn) ."
+
+      - name: Run tests
+        run: |
+          make tests_run
