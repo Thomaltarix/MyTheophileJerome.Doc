@@ -44,9 +44,7 @@ options =
   ]
 
 checkValidityOptions :: Conf -> Bool
-checkValidityOptions opts = isNothing (inputFile opts) || 
-                            isNothing (inputFormat opts) ||
-                            isNothing (outputFile opts) ||
+checkValidityOptions opts = isNothing (inputFile opts) ||
                             isNothing (outputFormat opts)
 
 getConfByOptions :: [Conf -> Conf] -> Maybe Conf
