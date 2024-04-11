@@ -8,6 +8,7 @@
 module ParsingCommand (
     Conf(..),
     parseArgs,
+    displayUsage
     ) where
 
 import System.Console.GetOpt
@@ -27,6 +28,13 @@ defaultConf = Conf
     outputFile = Nothing,
     outputFormat = Nothing
   }
+
+displayUsage :: IO ()
+displayUsage = putStr  ("USAGE: ./mypandoc -i ifile -f oformat [-o ofile] [-e iformat]\n" ++
+                      "\tifilepath\tto the file to convert\n" ++
+                      "\toformat\t\toutput format (xml, json, markdown)\n" ++
+                      "\tofile\t\tpath to the output file\n" ++
+                      "\tiformat\t\tinput format (xml, json, markdown)\n")
 
 options :: [OptDescr (Conf -> Conf)]
 options =
