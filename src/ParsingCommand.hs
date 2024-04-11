@@ -61,9 +61,8 @@ getConfByOptions opts = let conf = foldl (flip id) defaultConf opts
                         else Nothing
 
 getOptions :: [Conf -> Conf] -> [String] -> [String] -> Maybe Conf
-getOptions opts errs nopt = case (null errs, null nopt, not (null opts)) of
-    (True, True, True) -> getConfByOptions opts
-    _ -> Nothing
+getOptions opts [] [] = getConfByOptions opts
+getOptions _ _ _ = Nothing
 
 parseArgs :: [String] -> Maybe Conf
 parseArgs args =
