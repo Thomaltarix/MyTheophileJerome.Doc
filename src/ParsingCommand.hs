@@ -30,23 +30,23 @@ defaultConf = Conf
   }
 
 displayUsage :: IO ()
-displayUsage = putStr  ("USAGE: ./mypandoc -i ifile -f oformat" ++
-  " [-o ofile] [-e iformat]\n" ++
-  "\tifilepath\tto the file to convert\n" ++
-  "\toformat\t\toutput format (xml, json, markdown)\n" ++
-  "\tofile\t\tpath to the output file\n" ++
-    "\tiformat\t\tinput format (xml, json, markdown)\n")
+displayUsage = putStr  ("USAGE: ./mypandoc -i ifile -f oformat [-o ofile] " ++
+                      "[-e iformat]\n" ++
+                      "\tifilepath\tto the file to convert\n" ++
+                      "\toformat\t\toutput format (xml, json, markdown)\n" ++
+                      "\tofile\t\tpath to the output file\n" ++
+                      "\tiformat\t\tinput format (xml, json, markdown)\n")
 
 options :: [OptDescr (Conf -> Conf)]
 options =
   [ Option ['i'] ["inputfile"] (ReqArg (\arg opts -> opts
-  { inputFile = Just arg }) "FILE") "path to input file"
+    { inputFile = Just arg }) "FILE") "path to input file"
   , Option ['f'] ["outputformat"] (ReqArg (\arg opts -> opts
-  { outputFormat = Just arg }) "FILE") "format of the output"
+    { outputFormat = Just arg }) "FILE") "format of the output"
   , Option ['o'] ["outputFile"] (ReqArg (\arg opts -> opts
-  { outputFile = Just arg }) "FILE") "path to the output file"
+    { outputFile = Just arg }) "FILE") "path to the output file"
   , Option ['e'] ["inputFormat"] (ReqArg (\arg opts -> opts
-  { inputFormat = Just arg }) "FILE") "format of the input file"
+    { inputFormat = Just arg }) "FILE") "format of the input file"
   ]
 
 checkValidityOptions :: Conf -> Bool
