@@ -5,7 +5,7 @@
 -- DataStructure
 -}
 
-module ParsingCommand (
+module DataStructure (
     DataStruct(..),
     Header(..),
     Object(..),
