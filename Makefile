@@ -29,6 +29,7 @@ $(NAME):
 clean:
 	@echo -ne "Clean: "
 	@stack clean
+	@rm -rf .stack-work
 	@echo -e "\033[92m Done\033[0m"
 
 fclean: clean clean_tests
