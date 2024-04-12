@@ -41,7 +41,7 @@ jobs:
   check_compilation:
     name: Check compilation
     needs: [check_coding_style]
-    timeout-minutes: 2
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     container:
       image: epitechcontent/epitest-docker:latest
