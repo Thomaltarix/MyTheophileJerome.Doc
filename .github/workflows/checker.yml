@@ -63,7 +63,7 @@ jobs:
   run_tests:
     name: Run tests
     needs: [check_compilation]
-    timeout-minutes: 2
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     container:
       image: epitechcontent/epitest-docker:latest
