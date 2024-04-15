@@ -37,16 +37,17 @@ printString :: Maybe Handle -> String -> IO ()
 printString Nothing str = putStrLn str
 printString (Just handle) str = hPutStrLn handle str
 
-parseOutputFormat :: String -> Maybe Handle -> DataStruct -> IO ()
-parseOutputFormat "xml" handle dataStruct = printXml handle dataStruct
-parseOutputFormat "json" handle dataStruct = printJson handle dataStruct
-parseOutputFormat "markdown" handle dataStruct = printMarkdown handle dataStruct
-parseOutputFormat _ handle _ = printString handle "Invalid output format"
+parseFormat :: String -> Maybe Handle -> DataStruct -> IO ()
+parseFormat "xml" handle dataStruct = printXml handle dataStruct
+parseFormat "json" handle dataStruct = printJson handle dataStruct
+parseFormat "markdown" handle dataStruct = printMarkdown handle dataStruct
+parseFormat _ handle _ = printString handle "Invalid output format"
 
 handleOutput :: Conf -> DataStruct -> IO ()
 handleOutput conf dataStruct
-    | isNothing (outputFile conf) = parseOutputFormat (fromJust (outputFormat conf)) Nothing dataStruct
+    | isNothing (outputFile conf) =
+        parseFormat (fromJust (outputFormat conf)) Nothing dataStruct
     | otherwise = do
         handle <- openFile (fromJust (outputFile conf)) WriteMode
-        parseOutputFormat (fromJust (outputFormat conf)) (Just handle) dataStruct
+        parseFormat (fromJust(outputFormat conf))(Just handle) dataStruct
         hClose handle
