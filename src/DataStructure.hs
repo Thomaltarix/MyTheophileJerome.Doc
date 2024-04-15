@@ -11,7 +11,11 @@ module DataStructure (
     Object(..),
     Data(..),
     ObjectType(..),
-    Conf(..)
+    DataType(..),
+    Conf(..),
+    defaultHeader,
+    createData,
+    createObject
     ) where
 
 
@@ -58,3 +62,22 @@ data Data = Data
         dataType :: DataType,
         symbol :: Maybe String
     } deriving (Eq, Show)
+
+defaultHeader :: Header
+defaultHeader = Header 
+    {
+    title = Nothing,
+    author = Nothing,
+    date = Nothing
+    }
+
+createData :: String -> DataType -> String -> Data
+createData c t s = Data{dataContent = Just c, dataType = t, symbol = Just s}
+
+createObject :: ObjectType -> String -> [Data] -> [Object] -> Object
+createObject t s d o = Object {
+    objType = t,
+    objSymbol  = Just s,
+    datas = d,
+    objects = o
+    }

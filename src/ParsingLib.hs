@@ -142,7 +142,8 @@ isSameString (x:xs) (y:ys) = x == y && isSameString xs ys
 parseString :: String -> Parser String
 parseString strToMatch = Parser p where
     p str
-        | isSameString strToMatch str = Just (strToMatch, drop (length strToMatch) str)
+        | isSameString strToMatch str =
+            Just (strToMatch, drop (length strToMatch) str)
         | otherwise = Nothing
 
 parseStringQuote :: Parser String
