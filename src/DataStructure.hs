@@ -30,9 +30,6 @@ data DataStruct = DataStruct
         content :: Object
     } deriving Eq
 
--- enum
-data ObjectType = ObjectT | ListT deriving Eq
-
 -- Header
 data Header = Header
     {
@@ -41,17 +38,23 @@ data Header = Header
         date :: Maybe Data
     } deriving Eq
 
+-- enum
+data ObjectType = SectionT | ListT | CodeBlockT  deriving Eq
+
+data DataType = TextT | ItalicT | BoldT | CodeT | LinkT | ImageT | ParagraphT deriving Eq
+
 -- Objects
 data Object = Object
     {
-        dataType :: ObjectType,
+        objType :: ObjectType,
+        objSymbol :: Maybe String,
         datas :: [Data],
-        objects :: [Object],
-        objSymbol :: Maybe String
+        objects :: [Object]
     } deriving Eq
 
 data Data = Data
     {
         dataContent :: Maybe String,
+        dataType :: DataType,
         symbol :: Maybe String
     } deriving Eq
