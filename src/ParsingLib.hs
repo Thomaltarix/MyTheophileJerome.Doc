@@ -16,7 +16,9 @@ module ParsingLib (
     parseSome,
     parseUInt,
     parseInt,
-    parseString
+    parseString,
+    (<|>),
+    parseStringQuote
     ) where
 
 import Control.Applicative
@@ -142,3 +144,10 @@ parseString strToMatch = Parser p where
     p str
         | isSameString strToMatch str = Just (strToMatch, drop (length strToMatch) str)
         | otherwise = Nothing
+
+parseStringQuote :: Parser String
+parseStringQuote = Parser p where
+    p ('\"':str) = case break (=='\"') str of
+        (quoted, rest) -> Just (quoted, drop 1 rest)
+    p _ = Nothing
+    
