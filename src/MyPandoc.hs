@@ -10,8 +10,8 @@ module MyPandoc (
     ) where
 
 import System.Exit(exitWith, ExitCode(ExitFailure))
-
 import ParsingCommand
+import Display
 
 myPandoc :: [String] -> IO ()
 myPandoc [] = displayUsage >> exitWith(ExitFailure 84)

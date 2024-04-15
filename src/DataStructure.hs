@@ -11,7 +11,8 @@ module DataStructure (
     Object(..),
     Data(..),
     ObjectType(..),
-    Conf(..)
+    Conf(..),
+    DataType(..)
     ) where
 
 
@@ -39,9 +40,9 @@ data Header = Header
     } deriving Eq
 
 -- enum
-data ObjectType = SectionT | ListT | CodeBlockT  deriving Eq
+data ObjectType = SectionT | ListT | CodeBlockT | LinkT | ParagraphT |ImageT  deriving Eq
 
-data DataType = TextT | ItalicT | BoldT | CodeT | LinkT | ImageT | ParagraphT deriving Eq
+data DataType = TextT | ItalicT | BoldT | CodeT deriving Eq
 
 -- Objects
 data Object = Object
