@@ -131,13 +131,6 @@ parseInt = Parser p where
     p (x:str) = runParser parseUInt (x:str)
     p [] = Nothing
 
-
-data JsonValue = JsonNull
-               | JsonBool Bool
-               | JsonNumber Double
-               | JsonString String
-               deriving (Show)
-
 isSameString :: String -> String -> Bool
 isSameString [] _ = True
 isSameString _ [] = False
