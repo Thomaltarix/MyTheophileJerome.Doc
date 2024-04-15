@@ -10,8 +10,18 @@ module DataStructure (
     Header(..),
     Object(..),
     Data(..),
-    ObjectType(..)
+    ObjectType(..),
+    Conf(..)
     ) where
+
+
+data Conf = Conf
+    {
+        inputFile :: Maybe String,
+        inputFormat :: Maybe String,
+        outputFile :: Maybe String,
+        outputFormat :: Maybe String
+    } deriving Show
 
 -- main structure
 data DataStruct = DataStruct

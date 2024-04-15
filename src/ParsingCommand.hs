@@ -6,20 +6,13 @@
 -}
 
 module ParsingCommand (
-    Conf(..),
-    parseArgs,
+    parseArgs
     displayUsage
     ) where
 
+import DataStructure (Conf(..))
 import System.Console.GetOpt
 import Data.Maybe (isNothing)
-
-data Conf = Conf
-  { inputFile :: Maybe String,
-    inputFormat :: Maybe String,
-    outputFile :: Maybe String,
-    outputFormat :: Maybe String
-  } deriving Show
 
 defaultConf :: Conf
 defaultConf = Conf
