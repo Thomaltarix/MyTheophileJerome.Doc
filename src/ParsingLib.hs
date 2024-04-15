@@ -15,7 +15,8 @@ module ParsingLib (
     parseMany,
     parseSome,
     parseUInt,
-    parseInt
+    parseInt,
+    parseString
     ) where
 
 import Control.Applicative
