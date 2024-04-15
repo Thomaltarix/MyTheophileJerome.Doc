@@ -28,7 +28,7 @@ data DataStruct = DataStruct
     {
         header :: Header,
         content :: Object
-    } deriving Eq
+    } deriving (Eq, Show)
 
 -- Header
 data Header = Header
@@ -36,12 +36,12 @@ data Header = Header
         title :: Maybe Data,
         author :: Maybe Data,
         date :: Maybe Data
-    } deriving Eq
+    } deriving (Eq, Show)
 
 -- enum
-data ObjectType = SectionT | ListT | CodeBlockT  deriving Eq
+data ObjectType = SectionT | ListT | CodeBlockT  deriving (Eq, Show)
 
-data DataType = TextT | ItalicT | BoldT | CodeT | LinkT | ImageT | ParagraphT deriving Eq
+data DataType = TextT | ItalicT | BoldT | CodeT | LinkT | ImageT | ParagraphT deriving (Eq, Show)
 
 -- Objects
 data Object = Object
@@ -50,11 +50,11 @@ data Object = Object
         objSymbol :: Maybe String,
         datas :: [Data],
         objects :: [Object]
-    } deriving Eq
+    } deriving (Eq, Show)
 
 data Data = Data
     {
         dataContent :: Maybe String,
         dataType :: DataType,
         symbol :: Maybe String
-    } deriving Eq
+    } deriving (Eq, Show)
