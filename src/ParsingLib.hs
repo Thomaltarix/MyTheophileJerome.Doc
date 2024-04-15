@@ -130,3 +130,21 @@ parseInt = Parser p where
         Nothing      -> Nothing
     p (x:str) = runParser parseUInt (x:str)
     p [] = Nothing
+
+
+data JsonValue = JsonNull
+               | JsonBool Bool
+               | JsonNumber Double
+               | JsonString String
+               deriving (Show)
+
+isSameString :: String -> String -> Bool
+isSameString [] _ = True
+isSameString _ [] = False
+isSameString (x:xs) (y:ys) = x == y && isSameString xs ys
+
+parseString :: String -> Parser String
+parseString strToMatch = Parser p where
+    p str
+        | isSameString strToMatch str = Just (strToMatch, drop (length strToMatch) str)
+        | otherwise = Nothing
