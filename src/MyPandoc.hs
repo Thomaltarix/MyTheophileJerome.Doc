@@ -16,5 +16,5 @@ import ParsingCommand
 myPandoc :: [String] -> IO ()
 myPandoc [] = displayUsage >> exitWith(ExitFailure 84)
 myPandoc args = case parseArgs args of
-                          Nothing -> displayUsage >> exitWith(ExitFailure 84)
-                          Just conf -> print conf
+                        Nothing -> displayUsage >> exitWith(ExitFailure 84)
+                        Just conf -> print conf

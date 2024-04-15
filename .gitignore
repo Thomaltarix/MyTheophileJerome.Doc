@@ -21,7 +21,8 @@ cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
-.stack-work/
+.stack-work/*
+.stack/*
 *~
 MyPandoc.cabal
 stack.yaml.lock
