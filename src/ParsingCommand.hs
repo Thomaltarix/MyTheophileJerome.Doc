@@ -6,7 +6,7 @@
 -}
 
 module ParsingCommand (
-    parseArgs
+    parseArgs,
     displayUsage
     ) where
 
