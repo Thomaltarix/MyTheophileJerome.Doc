@@ -15,21 +15,21 @@ import DataStructure
 
 data JsonValue = JsonVoid | JsonTitle | JsonAuthor | JsonDate deriving (Show)
 
-getHeader :: String -> Header -> Maybe Header
+getHeader :: String -> Header -> (Maybe Header, String)
 getHeader str h =
     case jsonHeader str h of
-        Header {title = Nothing} -> Nothing
-        h' -> Just h'
+        (Header {title = Nothing}, _) -> (Nothing, str)
+        (h', str') -> (Just h', str')
 
-jsonHeader :: String -> Header -> Header
+jsonHeader :: String -> Header -> (Header, String)
 jsonHeader str h =
     case runParser jsonHeaderParsing str of
-        Just (((aType, aData), (bType, bData), (cType, cData)), _) ->
+        Just (((aType, aData), (bType, bData), (cType, cData)), str') ->
             let h1 = processJson (aType, aData) h
                 h2 = processJson (bType, bData) h1
                 h3 = processJson (cType, cData) h2
-            in h3
-        Nothing -> h
+            in (h3, str')
+        Nothing -> (h, str)
 
 jsonHeaderParsing :: Parser ((JsonValue, String), (JsonValue, String), (JsonValue, String))
 jsonHeaderParsing = do

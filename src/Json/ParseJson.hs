@@ -8,7 +8,8 @@
 module Json.ParseJson (
     ) where
 
-import Json.ParseHeader
+import Json.ParseHeader(getHeader)
+import Json.ParseContent
 import DataStructure
 -- import DataStructure
 
@@ -17,12 +18,13 @@ data JsonValue = JsonVoid | JsonTitle | JsonAuthor | JsonDate deriving (Show)
 test :: IO ()
 test = readFile "example/syntaxe.json" >>= print . jsonParsing
 
-jsonParsing :: String -> DataStruct
+jsonParsing :: String -> Maybe DataStruct
 jsonParsing str =
     case getHeader str defaultHeader of
-        Just h -> DataStruct {
+        (Just h, str') -> case getContent str' defaultObject of
+            (Just c, _) -> Just DataStruct {
                 header = h,
-                content = createObject SectionT "test" [] [] }
-        Nothing -> DataStruct {
-                header = defaultHeader,
-                content = createObject SectionT "test" [] []}
+                content = c
+                }
+            (Nothing, _) -> Nothing
+        (Nothing, _) -> Nothing

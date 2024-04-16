@@ -15,7 +15,8 @@ module DataStructure (
     Conf(..),
     defaultHeader,
     createData,
-    createObject
+    createObject,
+    defaultObject
     ) where
 
 
@@ -69,6 +70,15 @@ defaultHeader = Header
     title = Nothing,
     author = Nothing,
     date = Nothing
+    }
+
+defaultObject :: Object
+defaultObject = Object 
+    {
+    objType = SectionT,
+    objSymbol = Nothing,
+    datas = [],
+    objects = []
     }
 
 createData :: String -> DataType -> String -> Data
