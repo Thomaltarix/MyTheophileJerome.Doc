@@ -11,9 +11,6 @@ module Json.ParseJson (
 import Json.ParseHeader(getHeader)
 import Json.ParseContent
 import DataStructure
--- import DataStructure
-
-data JsonValue = JsonVoid | JsonTitle | JsonAuthor | JsonDate deriving (Show)
 
 test :: IO ()
 test = readFile "example/syntaxe.json" >>= print . jsonParsing

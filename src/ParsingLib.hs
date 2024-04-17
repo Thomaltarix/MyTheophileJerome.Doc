@@ -18,7 +18,8 @@ module ParsingLib (
     parseInt,
     parseString,
     (<|>),
-    parseStringQuote
+    parseStringQuote,
+    parseIntString
     ) where
 
 import Control.Applicative
@@ -152,3 +153,17 @@ parseStringQuote = Parser p where
         (quoted, rest) -> Just (quoted, drop 1 rest)
     p _ = Nothing
     
+
+parseUIntString :: Parser String
+parseUIntString = Parser p where
+    p str = do
+        (int, str') <- runParser (parseMany (parseAnyChar ['0'..'9'])) str
+        if int == "" then Nothing else Just (int, str')
+
+parseIntString :: Parser String
+parseIntString = Parser p where
+    p ('-':str) = case runParser parseUIntString str of
+        Just (nb, str') -> Just ('-':nb, str')
+        Nothing      -> Nothing
+    p (x:str) = runParser parseUIntString (x:str)
+    p [] = Nothing

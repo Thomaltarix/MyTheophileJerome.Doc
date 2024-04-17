@@ -11,7 +11,6 @@ module Json.ParseHeader (
 
 import ParsingLib
 import DataStructure
--- import DataStructure
 
 data JsonValue = JsonVoid | JsonTitle | JsonAuthor | JsonDate deriving (Show)
 
@@ -42,14 +41,6 @@ jsonHeaderParsing = do
     c <- jsonTitleParse<|>jsonAuthorParse<|>jsonDateParse<|>jsonVoidParse
     _ <- parseChar '}'
     return (a, b, c)
-
-jsonTextParsing :: String -> Parser String
-jsonTextParsing str = do
-    _ <- parseString str
-    _ <- parseMany (parseAnyChar " \n\t")
-    a <- parseStringQuote
-    _ <- parseMany (parseAnyChar " \n\t,")
-    return a
 
 jsonTitleParse :: Parser (JsonValue, String)
 jsonTitleParse = do
