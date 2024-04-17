@@ -58,6 +58,10 @@ printJsonHeader handle
     printData handle (fromJust date_) True
     printString handle endTag
 
+printJsonContent :: Maybe Handle -> Object -> IO ()
+printJsonContent handle obj = printString handle "content"
+
 printJson :: Maybe Handle -> DataStruct -> IO ()
 printJson handle dataStruct = do
     printJsonHeader handle (header dataStruct)
+    printJsonContent handle (content dataStruct)
