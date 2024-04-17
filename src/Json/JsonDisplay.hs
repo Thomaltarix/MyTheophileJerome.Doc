@@ -32,13 +32,13 @@ getJsonDataTag data_ = case dataType data_ of
     BoldT -> ("\"", "\"")
     CodeT -> ("\"", "\"")
 
-printEnd :: Maybe Handle -> Bool -> IO ()
-printEnd handle end
+printJsonEnd :: Maybe Handle -> Bool -> IO ()
+printJsonEnd handle end
     | not end = printString handle ","
     | otherwise = return ()
 
-printData :: Maybe Handle -> Data -> Bool -> IO ()
-printData handle data_  end = do
+printJsonData :: Maybe Handle -> Data -> Bool -> IO ()
+printJsonData handle data_  end = do
     let (startTag, endTag) = getJsonDataTag data_
     printString handle "\""
     printString handle (fromJust (symbol data_))
@@ -46,16 +46,16 @@ printData handle data_  end = do
     printString handle startTag
     printString handle (fromJust (dataContent data_))
     printString handle endTag
-    printEnd handle end
+    printJsonEnd handle end
 
 printJsonHeader :: Maybe Handle -> Header -> IO ()
 printJsonHeader handle
     Header {title = title_, author = author_, date = date_} = do
     let (startTag, endTag) = getJsonObjectTag (Object SectionT Nothing [] [])
     printString handle startTag
-    printData handle (fromJust title_) False
-    printData handle (fromJust author_) False
-    printData handle (fromJust date_) True
+    printJsonData handle (fromJust title_) False
+    printJsonData handle (fromJust author_) False
+    printJsonData handle (fromJust date_) True
     printString handle endTag
 
 printJsonContent :: Maybe Handle -> Object -> IO ()
