@@ -150,7 +150,8 @@ parseString strToMatch = Parser p where
 parseStringQuote :: Parser String
 parseStringQuote = Parser p where
     p ('\"':str) = case break (=='\"') str of
-        (quoted, rest) -> Just (quoted, drop 1 rest)
+        (quoted, rest) -> do
+            Just (quoted, drop 1 rest)
     p _ = Nothing
     
 

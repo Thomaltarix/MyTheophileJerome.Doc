@@ -40,6 +40,7 @@ jsonHeaderParsing = do
     b <- jsonTitleParse<|>jsonAuthorParse<|>jsonDateParse<|>jsonVoidParse
     c <- jsonTitleParse<|>jsonAuthorParse<|>jsonDateParse<|>jsonVoidParse
     _ <- parseChar '}'
+    _ <- parseMany (parseAnyChar " \n\t,")
     return (a, b, c)
 
 jsonTitleParse :: Parser (JsonValue, String)
