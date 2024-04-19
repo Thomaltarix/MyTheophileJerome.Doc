@@ -13,10 +13,6 @@ module Json.ParseContent (
 import ParsingLib
 import DataStructure
 
-data JsonValue = JsonText | JsonTitle | JsonBold |
-                JsonItalic | JsonCode | JsonUrl |
-                JsonAlt | JsonImage deriving (Show)
-
 getContent :: String -> (Maybe Object, String)
 getContent str = case runParser parseJsonBody str of
     Nothing -> (Nothing, str)
