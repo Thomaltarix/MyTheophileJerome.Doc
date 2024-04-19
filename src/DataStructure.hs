@@ -32,7 +32,8 @@ data Conf = Conf
 data DataStruct = DataStruct
     {
         header :: Header,
-        content :: Object
+        content :: Object,
+        ok :: String
     } deriving (Eq, Show)
 
 -- Header
@@ -49,12 +50,12 @@ data ObjectType = SectionT | ListT | CodeBlockT  deriving (Eq, Show)
 data DataType = TextT | ItalicT | BoldT | CodeT | LinkT | ImageT | ParagraphT deriving (Eq, Show)
 
 -- Objects
+-- TODO Replace Data and Object List by an Either
 data Object = Object
     {
         objType :: ObjectType,
         objSymbol :: Maybe String,
-        datas :: [Data],
-        objects :: [Object]
+        datas :: [Either Data Object]
     } deriving (Eq, Show)
 
 data Data = Data
@@ -77,17 +78,15 @@ defaultObject = Object
     {
     objType = SectionT,
     objSymbol = Nothing,
-    datas = [],
-    objects = []
+    datas = []
     }
 
-createData :: String -> DataType -> String -> Data
-createData c t s = Data{dataContent = Just c, dataType = t, symbol = Just s}
+createData :: Maybe String -> DataType -> Maybe String -> Data
+createData c t s = Data{dataContent = c, dataType = t, symbol = s}
 
-createObject :: ObjectType -> String -> [Data] -> [Object] -> Object
-createObject t s d o = Object {
+createObject :: ObjectType -> String -> [Either Data Object] -> Object
+createObject t s d = Object {
     objType = t,
     objSymbol  = Just s,
-    datas = d,
-    objects = o
+    datas = d
     }
