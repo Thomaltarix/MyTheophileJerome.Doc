@@ -39,8 +39,7 @@ jsonHeaderParsing = do
     a <- jsonTitleParse<|>jsonAuthorParse<|>jsonDateParse<|>jsonVoidParse
     b <- jsonTitleParse<|>jsonAuthorParse<|>jsonDateParse<|>jsonVoidParse
     c <- jsonTitleParse<|>jsonAuthorParse<|>jsonDateParse<|>jsonVoidParse
-    _ <- parseChar '}'
-    _ <- parseMany (parseAnyChar " \n\t,")
+    _ <- parseAnd (parseChar '}') (parseMany (parseAnyChar " \n\t,"))
     return (a, b, c)
 
 jsonTitleParse :: Parser (JsonValue, String)
@@ -71,13 +70,16 @@ jsonVoidParse :: Parser (JsonValue, String)
 jsonVoidParse = return (JsonVoid, "")
 
 processJsonTitle :: String -> Header -> Header
-processJsonTitle str h = h {title = Just (createData str TextT "title")}
+processJsonTitle str h =
+    h {title = Just (createData (Just str) TextT (Just "title"))}
 
 processJsonAuthor :: String -> Header -> Header
-processJsonAuthor str h = h {author = Just (createData str TextT "author")}
+processJsonAuthor str h =
+    h {author = Just (createData (Just str) TextT (Just "author"))}
 
 processJsonDate :: String -> Header -> Header
-processJsonDate str h = h {date = Just (createData str TextT "date")}
+processJsonDate str h =
+    h {date = Just (createData (Just str) TextT (Just "date"))}
 
 processJson :: (JsonValue, String) -> Header -> Header
 processJson (JsonTitle, jsonData)  h = processJsonTitle jsonData h
