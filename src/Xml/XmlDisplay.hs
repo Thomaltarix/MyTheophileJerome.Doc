@@ -22,6 +22,7 @@ getXmlObjectTag obj = case objType obj of
     LinkT -> ("<link>", "</link>")
     ParagraphT -> ("<paragraph>", "</paragraph>")
     ImageT -> ("<image>", "</image>")
+    AltT -> ("<alt>", "</alt>")
 
 getXmlDataTag :: Data -> (String, String)
 getXmlDataTag data_ = case dataType data_ of
