@@ -33,6 +33,10 @@ getJsonDataTag data_ = case dataType data_ of
     BoldT -> ("\"", "\"")
     CodeT -> ("\"", "\"")
 
+getJsonTag :: Either Data Object -> (String, String)
+getJsonTag (Left data_) = getJsonDataTag data_
+getJsonTag (Right obj) = getJsonObjectTag obj
+
 printJsonEnd :: Maybe Handle -> Bool -> IO ()
 printJsonEnd handle end
     | not end = printString handle ",\n" 0
