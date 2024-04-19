@@ -44,7 +44,7 @@ printJsonEnd handle end
 
 printJsonSymbol :: Maybe Handle -> String -> Int -> IO ()
 printJsonSymbol handle "" spaces = printString handle "" spaces
-printJsonSymbol handle symbol_ spaces=
+printJsonSymbol handle symbol_ spaces =
     printString handle "\"" spaces >>
     printString handle symbol_ 0 >>
     printString handle "\": " 0 >>
