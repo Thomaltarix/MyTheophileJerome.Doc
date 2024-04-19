@@ -32,8 +32,7 @@ data Conf = Conf
 data DataStruct = DataStruct
     {
         header :: Header,
-        content :: Object,
-        ok :: String
+        content :: Object
     } deriving (Eq, Show)
 
 -- Header
@@ -49,8 +48,6 @@ data ObjectType = SectionT | ListT | CodeBlockT  deriving (Eq, Show)
 
 data DataType = TextT | ItalicT | BoldT | CodeT | LinkT | ImageT | ParagraphT deriving (Eq, Show)
 
--- Objects
--- TODO Replace Data and Object List by an Either
 data Object = Object
     {
         objType :: ObjectType,
