@@ -18,7 +18,7 @@ test = readFile "example/syntaxe.json" >>= print . jsonParsing
 jsonParsing :: String -> Maybe DataStruct
 jsonParsing str =
     case getHeader str defaultHeader of
-        (Just h, str') -> case getContent str' defaultObject of
+        (Just h, str') -> case getContent str' of
             (Just c, _) -> Just DataStruct {
                 header = h,
                 content = c

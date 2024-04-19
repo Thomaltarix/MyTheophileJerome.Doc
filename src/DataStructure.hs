@@ -44,9 +44,9 @@ data Header = Header
     } deriving (Eq, Show)
 
 -- enum
-data ObjectType = SectionT | ListT | CodeBlockT  deriving (Eq, Show)
+data ObjectType = SectionT | ListT | CodeBlockT | LinkT | ImageT | AltT deriving (Eq, Show)
 
-data DataType = TextT | ItalicT | BoldT | CodeT | LinkT | ImageT | ParagraphT deriving (Eq, Show)
+data DataType = TextT | ItalicT | BoldT | CodeT deriving (Eq, Show)
 
 data Object = Object
     {

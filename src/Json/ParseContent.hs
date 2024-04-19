@@ -17,8 +17,8 @@ data JsonValue = JsonText | JsonTitle | JsonBold |
                 JsonItalic | JsonCode | JsonUrl |
                 JsonAlt | JsonImage deriving (Show)
 
-getContent :: String -> Object -> (Maybe Object, String)
-getContent str o = case runParser parseJsonBody str of
+getContent :: String -> (Maybe Object, String)
+getContent str = case runParser parseJsonBody str of
     Nothing -> (Nothing, str)
     Just (c, str') -> (Just c, str')
 
@@ -166,7 +166,7 @@ parseJsonImage = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseChar '{'
     _ <- parseMany (parseAnyChar " \n\t")
-    a <- concatObject (Just "image") SectionT defaultObject
+    a <- concatObject (Just "image") ImageT defaultObject
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseChar '}'
     return (Right a)
@@ -178,7 +178,7 @@ parseJsonAlt = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseChar '['
     _ <- parseMany (parseAnyChar " \n\t")
-    a <- concatList (Just "alt") ListT defaultObject
+    a <- concatList (Just "alt") AltT defaultObject
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseChar ']'
     return (Right a)
@@ -190,7 +190,7 @@ parseJsonLink = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseChar '{'
     _ <- parseMany (parseAnyChar " \n\t")
-    a <- concatObject (Just "link") SectionT defaultObject
+    a <- concatObject (Just "link") LinkT defaultObject
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseChar '}'
     return (Right a)

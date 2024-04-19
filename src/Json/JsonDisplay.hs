@@ -20,8 +20,8 @@ getJsonObjectTag obj = case objType obj of
     ListT -> ("[", "]")
     CodeBlockT -> ("[", "]")
     LinkT -> ("{", "}")
-    ParagraphT -> ("[", "]")
     ImageT -> ("{", "}")
+    AltT -> ("[", "]")
 
 getJsonDataTag :: Data -> (String, String)
 getJsonDataTag data_ = case dataType data_ of

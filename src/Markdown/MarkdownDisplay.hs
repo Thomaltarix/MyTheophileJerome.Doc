@@ -20,8 +20,8 @@ getMarkdownObjectTag obj = case objType obj of
     ListT -> ("", "")
     CodeBlockT -> ("```", "```")
     LinkT -> ("[", "]")
-    ParagraphT -> ("", "")
     ImageT -> ("![", "]")
+    AltT -> ("![", "]")
 
 getMarkdownDataTag :: Data -> (String, String)
 getMarkdownDataTag data_ = case dataType data_ of
