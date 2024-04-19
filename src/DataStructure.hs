@@ -49,8 +49,7 @@ data Object = Object
     {
         objType :: ObjectType,
         objSymbol :: Maybe String,
-        datas :: [Data],
-        objects :: [Object]
+        datas :: [Either Data Object]
     } deriving Eq
 
 data Data = Data
