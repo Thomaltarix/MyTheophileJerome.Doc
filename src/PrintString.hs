@@ -6,11 +6,17 @@
 -}
 
 module PrintString (
-    printString
+    printString,
+    myFromJustString
     ) where
 
 import System.IO
 
-printString :: Maybe Handle -> String -> IO ()
-printString Nothing str = putStrLn str
-printString (Just handle) str = hPutStrLn handle str
+myFromJustString :: Maybe String -> String
+myFromJustString (Just str) = str
+myFromJustString Nothing = ""
+
+printString :: Maybe Handle -> String -> Int -> IO ()
+printString Nothing str spaces = putStr (replicate spaces ' ') >> putStr str
+printString (Just handle) str spaces = hPutStr handle (replicate spaces ' ') >>
+    hPutStr handle str
