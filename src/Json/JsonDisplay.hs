@@ -50,10 +50,37 @@ printJsonData handle data_  end = do
     printString handle "\": "
     printString handle startTag
     printString handle (fromJust (dataContent data_))
-    printString handle endTag
-    printJsonEnd handle end
+printJsonData :: Maybe Handle -> Data -> Bool -> Int -> IO ()
+printJsonData handle data_ end spaces =
+    let (startTag, endTag) = getJsonDataTag data_ in
+    printJsonSymbol handle (myFromJustString (symbol data_)) spaces >>
+    printString handle startTag 0 >>
+    printString handle (myFromJustString (dataContent data_)) 0 >>
+    printString handle endTag 0 >>
+    printJsonEnd handle end >>
+    return ()
 
-printJsonHeader :: Maybe Handle -> Header -> IO ()
+printContent :: Maybe Handle -> [Either Data Object] -> Int -> IO ()
+printContent _ [] _ = return ()
+printContent handle [x] spaces = case x of
+    Left data_ -> printJsonData handle data_ True spaces
+    Right obj -> printJsonObject handle obj True spaces
+    >> printContent handle [] spaces
+printContent handle (x:xs) spaces = case x of
+    Left data_ -> printJsonData handle data_ False spaces
+    Right obj -> printJsonObject handle obj False spaces
+    >> printContent handle xs spaces
+
+printJsonObject :: Maybe Handle -> Object -> Bool -> Int -> IO ()
+printJsonObject handle obj end spaces =
+    let (startTag, endTag) = getJsonObjectTag obj in
+    printJsonSymbol handle (myFromJustString (objSymbol obj)) spaces >>
+    printString handle startTag 0 >>
+    printContent handle (datas obj) (spaces + 4) >>
+    printString handle endTag spaces >>
+    printJsonEnd handle end >>
+    return ()
+
 printJsonHeader handle
     Header {title = title_, author = author_, date = date_} = do
     let (startTag, endTag) = getJsonObjectTag (Object SectionT Nothing [] [])
