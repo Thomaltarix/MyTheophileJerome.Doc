@@ -141,7 +141,7 @@ parseJsonList = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseChar '['
     _ <- parseMany (parseAnyChar " \n\t")
-    a <- concatList Nothing ListT defaultObject
+    a <- concatList (Just "list") ListT defaultObject
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseAnd (parseChar ']') (parseMany (parseAnyChar " \n\t,"))
     return (Right a)
