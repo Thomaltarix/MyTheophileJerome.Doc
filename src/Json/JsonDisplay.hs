@@ -18,12 +18,12 @@ import Data.Maybe
 
 getJsonObjectTag :: Object -> (String, String)
 getJsonObjectTag obj = case objType obj of
-    SectionT -> ("{", "}")
-    ListT -> ("[", "]")
-    CodeBlockT -> ("[", "]")
-    LinkT -> ("{", "}")
-    ParagraphT -> ("[", "]")
-    ImageT -> ("{", "}")
+    SectionT -> ("{\n", "}")
+    ListT -> ("[\n", "]")
+    CodeBlockT -> ("[\n", "]")
+    LinkT -> ("{\n", "}")
+    ParagraphT -> ("[\n", "]")
+    ImageT -> ("{\n", "}")
     AltT -> ("[\n", "]")
 
 getJsonDataTag :: Data -> (String, String)
@@ -35,8 +35,8 @@ getJsonDataTag data_ = case dataType data_ of
 
 printJsonEnd :: Maybe Handle -> Bool -> IO ()
 printJsonEnd handle end
-    | not end = printString handle ","
-    | otherwise = return ()
+    | not end = printString handle ",\n" 0
+    | otherwise = printString handle "\n" 0
 
 printJsonData :: Maybe Handle -> Data -> Bool -> IO ()
 printJsonData handle data_  end = do
