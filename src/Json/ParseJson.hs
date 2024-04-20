@@ -6,14 +6,15 @@
 -}
 
 module Json.ParseJson (
+    jsonParsing
     ) where
 
 import Json.ParseHeader(getHeader)
 import Json.ParseContent
 import DataStructure
 
-test :: IO ()
-test = readFile "example/syntaxe.json" >>= print . jsonParsing
+-- test :: IO ()
+-- test = readFile "example/syntaxe.json" >>= print . jsonParsing
 
 jsonParsing :: String -> Maybe DataStruct
 jsonParsing str =
