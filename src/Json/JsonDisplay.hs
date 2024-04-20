@@ -14,7 +14,6 @@ module Json.JsonDisplay (
 import System.IO
 import DataStructure
 import PrintString
-import Data.Maybe
 
 getJsonObjectTag :: Object -> (String, String)
 getJsonObjectTag obj = case objType obj of
@@ -33,22 +32,12 @@ getJsonDataTag data_ = case dataType data_ of
     BoldT -> ("\"", "\"")
     CodeT -> ("\"", "\"")
 
-getJsonTag :: Either Data Object -> (String, String)
-getJsonTag (Left data_) = getJsonDataTag data_
-getJsonTag (Right obj) = getJsonObjectTag obj
-
-printJsonEnd :: Maybe Handle -> Bool -> IO ()
-printJsonEnd handle end
-    | not end = printString handle ",\n" 0
-    | otherwise = printString handle "\n" 0
-
 printJsonSymbol :: Maybe Handle -> String -> Int -> IO ()
 printJsonSymbol handle "" spaces = printString handle "" spaces
 printJsonSymbol handle symbol_ spaces =
     printString handle "\"" spaces >>
     printString handle symbol_ 0 >>
-    printString handle "\": " 0 >>
-    return ()
+    printString handle "\": " 0
 
 printJsonData :: Maybe Handle -> Data -> Bool -> Int -> IO ()
 printJsonData handle data_ end spaces =
@@ -57,48 +46,50 @@ printJsonData handle data_ end spaces =
     printString handle startTag 0 >>
     printString handle (myFromJustString (dataContent data_)) 0 >>
     printString handle endTag 0 >>
-    printJsonEnd handle end >>
-    return ()
+    printEnd handle end
 
-printContent :: Maybe Handle -> [Either Data Object] -> Int -> IO ()
-printContent _ [] _ = return ()
-printContent handle [x] spaces = case x of
+printJsonContent :: Maybe Handle -> [Either Data Object] -> Int -> IO ()
+printJsonContent _ [] _ = return ()
+printJsonContent handle [x] spaces = case x of
     Left data_ -> printJsonData handle data_ True spaces
     Right obj -> printJsonObject handle obj True spaces
-    >> printContent handle [] spaces
-printContent handle (x:xs) spaces = case x of
+    >> printJsonContent handle [] spaces
+printJsonContent handle (x:xs) spaces = case x of
     Left data_ -> printJsonData handle data_ False spaces
     Right obj -> printJsonObject handle obj False spaces
-    >> printContent handle xs spaces
+    >> printJsonContent handle xs spaces
 
 printJsonObject :: Maybe Handle -> Object -> Bool -> Int -> IO ()
 printJsonObject handle obj end spaces =
     let (startTag, endTag) = getJsonObjectTag obj in
     printJsonSymbol handle (myFromJustString (objSymbol obj)) spaces >>
     printString handle startTag 0 >>
-    printContent handle (datas obj) (spaces + 4) >>
+    printJsonContent handle (datas obj) (spaces + 4) >>
     printString handle endTag spaces >>
-    printJsonEnd handle end >>
-    return ()
+    printEnd handle end
+
+printJsonHeaderData :: Maybe Handle -> Maybe Data -> Bool -> Int -> IO ()
+printJsonHeaderData _ Nothing _ _ = return ()
+printJsonHeaderData handle (Just data_) end spaces =
+    printJsonData handle data_ end spaces
 
 printJsonHeader :: Maybe Handle -> Header -> Bool -> Int -> IO ()
 printJsonHeader handle
     Header {title = title_, author = author_, date = date_} end spaces =
-    let (startTag, endTag) = getJsonTag (Right (Object SectionT Nothing [])) in
+    let (startTag, endTag) = getJsonObjectTag (Object SectionT Nothing []) in
     printString handle "\"header\": " spaces >>
     printString handle startTag 0 >>
-    printJsonData handle (fromJust title_) False (spaces + 4) >>
-    printJsonData handle (fromJust author_) False (spaces + 4) >>
-    printJsonData handle (fromJust date_) True (spaces + 4) >>
+    printJsonHeaderData handle title_ False (spaces + 4) >>
+    printJsonHeaderData handle author_ False (spaces + 4) >>
+    printJsonHeaderData handle date_ True (spaces + 4) >>
     printString handle endTag spaces >>
-    printJsonEnd handle end >> return ()
+    printEnd handle end
 
 printJson :: Maybe Handle -> DataStruct -> IO ()
 printJson handle dataStruct =
-    let (startTag, endTag) = getJsonTag (Right (Object SectionT Nothing [])) in
+    let (startTag, endTag) = getJsonObjectTag (Object SectionT Nothing []) in
     printString handle startTag 0 >>
     printJsonHeader handle (header dataStruct) False 4 >>
     printJsonObject handle (content dataStruct) True 4 >>
     printString handle endTag 0 >>
-    printString handle "\n" 0 >>
-    return ()
+    printString handle "\n" 0
