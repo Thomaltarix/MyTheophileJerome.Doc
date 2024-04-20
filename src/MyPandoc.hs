@@ -26,8 +26,8 @@ myPandoc args = case parseArgs args of
 runPandoc :: Conf -> IO ()
 runPandoc conf = do
     str <- myReadFile (getInputFile conf)
-    case getStruct (inputFormat conf) str of
-        (Just d) -> print d  -- launch display here
+    case getStruct (getInputFormat (inputFormat conf) str) str of
+        (Just d) -> handleOutput conf d
         Nothing ->  displayUsage >> exitWith(ExitFailure 84)
 
 myReadFile :: String -> IO String
@@ -40,6 +40,16 @@ myReadFile input = do
 
 getStruct :: Maybe String -> String -> Maybe DataStruct
 getStruct (Just "json") str = jsonParsing str
-getStruct (Just "xml") _ = Nothing
-getStruct (Just "markdown") _ = Nothing
+-- getStruct (Just "xml") str = Nothing
+-- getStruct (Just "markdown") str = Nothing
 getStruct _ _ = Nothing
+
+getInputFormat :: Maybe String -> String -> Maybe String
+getInputFormat Nothing str = deduceInputFormat str
+getInputFormat format _ = format
+
+deduceInputFormat :: String -> Maybe String
+deduceInputFormat ('-':'-':'-':_) = Just "markdown"
+deduceInputFormat ('<':_) = Just "xml"
+deduceInputFormat ('{':_) = Just "json"
+deduceInputFormat _ = Nothing
