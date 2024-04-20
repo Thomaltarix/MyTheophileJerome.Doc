@@ -14,7 +14,6 @@ module Json.JsonDisplay (
 import System.IO
 import DataStructure
 import PrintString
-import Data.Maybe
 
 getJsonObjectTag :: Object -> (String, String)
 getJsonObjectTag obj = case objType obj of
@@ -32,15 +31,6 @@ getJsonDataTag data_ = case dataType data_ of
     ItalicT -> ("\"", "\"")
     BoldT -> ("\"", "\"")
     CodeT -> ("\"", "\"")
-
-getJsonTag :: Either Data Object -> (String, String)
-getJsonTag (Left data_) = getJsonDataTag data_
-getJsonTag (Right obj) = getJsonObjectTag obj
-
-printJsonEnd :: Maybe Handle -> Bool -> IO ()
-printJsonEnd handle end
-    | not end = printString handle ",\n" 0
-    | otherwise = printString handle "\n" 0
 
 printJsonSymbol :: Maybe Handle -> String -> Int -> IO ()
 printJsonSymbol handle "" spaces = printString handle "" spaces

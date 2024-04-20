@@ -7,10 +7,16 @@
 
 module PrintString (
     printString,
-    myFromJustString
+    myFromJustString,
+    printEnd
     ) where
 
 import System.IO
+
+printEnd :: Maybe Handle -> Bool -> IO ()
+printEnd handle end
+    | not end = printString handle ",\n" 0
+    | otherwise = printString handle "\n" 0
 
 myFromJustString :: Maybe String -> String
 myFromJustString (Just str) = str
