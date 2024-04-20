@@ -37,8 +37,7 @@ printJsonSymbol handle "" spaces = printString handle "" spaces
 printJsonSymbol handle symbol_ spaces =
     printString handle "\"" spaces >>
     printString handle symbol_ 0 >>
-    printString handle "\": " 0 >>
-    return ()
+    printString handle "\": " 0
 
 printJsonData :: Maybe Handle -> Data -> Bool -> Int -> IO ()
 printJsonData handle data_ end spaces =
@@ -47,8 +46,7 @@ printJsonData handle data_ end spaces =
     printString handle startTag 0 >>
     printString handle (myFromJustString (dataContent data_)) 0 >>
     printString handle endTag 0 >>
-    printJsonEnd handle end >>
-    return ()
+    printEnd handle end
 
 printContent :: Maybe Handle -> [Either Data Object] -> Int -> IO ()
 printContent _ [] _ = return ()
@@ -68,8 +66,8 @@ printJsonObject handle obj end spaces =
     printString handle startTag 0 >>
     printContent handle (datas obj) (spaces + 4) >>
     printString handle endTag spaces >>
-    printJsonEnd handle end >>
-    return ()
+    printEnd handle end
+
 
 printJsonHeader :: Maybe Handle -> Header -> Bool -> Int -> IO ()
 printJsonHeader handle
@@ -81,7 +79,7 @@ printJsonHeader handle
     printJsonData handle (fromJust author_) False (spaces + 4) >>
     printJsonData handle (fromJust date_) True (spaces + 4) >>
     printString handle endTag spaces >>
-    printJsonEnd handle end >> return ()
+    printEnd handle end
 
 printJson :: Maybe Handle -> DataStruct -> IO ()
 printJson handle dataStruct =
@@ -90,5 +88,4 @@ printJson handle dataStruct =
     printJsonHeader handle (header dataStruct) False 4 >>
     printJsonObject handle (content dataStruct) True 4 >>
     printString handle endTag 0 >>
-    printString handle "\n" 0 >>
-    return ()
+    printString handle "\n" 0
