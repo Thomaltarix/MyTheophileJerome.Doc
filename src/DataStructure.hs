@@ -55,6 +55,15 @@ data Object = Object
         datas :: [Either Data Object]
     } deriving (Eq, Show)
 
+instance Show ObjectType where
+    show SectionT = "Section"
+    show ListT = "List"
+    show CodeBlockT = "CodeBlock"
+    show LinkT = "Link"
+    show ParagraphT = "Paragraph"
+    show ImageT = "Image"
+    show AltT = "Alt"
+
 data Data = Data
     {
         dataContent :: Maybe String,
