@@ -63,7 +63,7 @@ data Data = Data
     } deriving (Eq, Show)
 
 defaultHeader :: Header
-defaultHeader = Header 
+defaultHeader = Header
     {
     title = Nothing,
     author = Nothing,
@@ -71,7 +71,7 @@ defaultHeader = Header
     }
 
 defaultObject :: Object
-defaultObject = Object 
+defaultObject = Object
     {
     objType = SectionT,
     objSymbol = Nothing,
