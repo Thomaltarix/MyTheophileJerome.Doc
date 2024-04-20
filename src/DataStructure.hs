@@ -44,7 +44,7 @@ data Header = Header
     } deriving (Eq, Show)
 
 -- enum
-data ObjectType = SectionT | ListT | CodeBlockT | LinkT | ImageT | AltT deriving (Eq, Show)
+data ObjectType = SectionT | ListT | CodeBlockT | LinkT | ParagraphT |ImageT | AltT  deriving Eq
 
 data DataType = TextT | ItalicT | BoldT | CodeT deriving (Eq, Show)
 
@@ -55,6 +55,15 @@ data Object = Object
         datas :: [Either Data Object]
     } deriving (Eq, Show)
 
+instance Show ObjectType where
+    show SectionT = "Section"
+    show ListT = "List"
+    show CodeBlockT = "CodeBlock"
+    show LinkT = "Link"
+    show ParagraphT = "Paragraph"
+    show ImageT = "Image"
+    show AltT = "Alt"
+
 data Data = Data
     {
         dataContent :: Maybe String,
@@ -63,7 +72,7 @@ data Data = Data
     } deriving (Eq, Show)
 
 defaultHeader :: Header
-defaultHeader = Header 
+defaultHeader = Header
     {
     title = Nothing,
     author = Nothing,
@@ -71,7 +80,7 @@ defaultHeader = Header
     }
 
 defaultObject :: Object
-defaultObject = Object 
+defaultObject = Object
     {
     objType = SectionT,
     objSymbol = Nothing,
