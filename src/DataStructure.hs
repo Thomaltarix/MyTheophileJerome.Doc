@@ -11,8 +11,12 @@ module DataStructure (
     Object(..),
     Data(..),
     ObjectType(..),
+    DataType(..),
     Conf(..),
-    DataType(..)
+    defaultHeader,
+    createData,
+    createObject,
+    defaultObject
     ) where
 
 
@@ -29,7 +33,7 @@ data DataStruct = DataStruct
     {
         header :: Header,
         content :: Object
-    } deriving Eq
+    } deriving (Eq, Show)
 
 -- Header
 data Header = Header
@@ -37,24 +41,49 @@ data Header = Header
         title :: Maybe Data,
         author :: Maybe Data,
         date :: Maybe Data
-    } deriving Eq
+    } deriving (Eq, Show)
 
 -- enum
-data ObjectType = SectionT | ListT | CodeBlockT | LinkT | ParagraphT |ImageT  deriving Eq
+data ObjectType = SectionT | ListT | CodeBlockT | LinkT | ImageT | AltT deriving (Eq, Show)
 
-data DataType = TextT | ItalicT | BoldT | CodeT deriving Eq
+data DataType = TextT | ItalicT | BoldT | CodeT deriving (Eq, Show)
 
--- Objects
 data Object = Object
     {
         objType :: ObjectType,
         objSymbol :: Maybe String,
         datas :: [Either Data Object]
-    } deriving Eq
+    } deriving (Eq, Show)
 
 data Data = Data
     {
         dataContent :: Maybe String,
         dataType :: DataType,
         symbol :: Maybe String
-    } deriving Eq
+    } deriving (Eq, Show)
+
+defaultHeader :: Header
+defaultHeader = Header 
+    {
+    title = Nothing,
+    author = Nothing,
+    date = Nothing
+    }
+
+defaultObject :: Object
+defaultObject = Object 
+    {
+    objType = SectionT,
+    objSymbol = Nothing,
+    datas = []
+    }
+
+createData :: Maybe String -> DataType -> Maybe String -> Data
+createData c t s = Data{dataContent = c, dataType = t, symbol = s}
+
+createObject :: ObjectType -> String -> [Either Data Object] -> Object
+createObject t s d = Object {
+    objType = t,
+    objSymbol  = Just s,
+    datas = d
+    }
