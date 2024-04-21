@@ -15,6 +15,7 @@ import Json.JsonDisplay
 import Xml.XmlDisplay
 import Markdown.MarkdownDisplay
 import PrintString
+import System.Exit(exitWith, ExitCode(ExitFailure))
 
 --
 import Data.Maybe
@@ -36,7 +37,7 @@ parseFormat :: String -> Maybe Handle -> DataStruct -> IO ()
 parseFormat "xml" handle dataStruct = printXml handle dataStruct
 parseFormat "json" handle dataStruct = printJson handle dataStruct
 parseFormat "markdown" handle dataStruct = printMarkdown handle dataStruct
-parseFormat _ handle _ = printString handle "Invalid output format" 0
+parseFormat _ _ _ = displayUsage >> exitWith(ExitFailure 84)
 
 handleOutput :: Conf -> DataStruct -> IO ()
 handleOutput conf dataStruct

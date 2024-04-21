@@ -7,7 +7,8 @@
 
 module ParsingCommand (
     Conf(..),
-    parseArgs
+    parseArgs,
+    getInputFile
     ) where
 
 import DataStructure (Conf(..))
@@ -21,6 +22,12 @@ defaultConf = Conf
     outputFile = Nothing,
     outputFormat = Nothing
   }
+
+getInputFile :: Conf -> String
+getInputFile conf =
+  case inputFile conf of
+    Just i -> i
+    Nothing -> ""
 
 options :: [OptDescr (Conf -> Conf)]
 options =
