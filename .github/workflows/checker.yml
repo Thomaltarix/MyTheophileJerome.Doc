@@ -65,8 +65,6 @@ jobs:
     needs: [check_compilation]
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    container:
-      image: epitechcontent/epitest-docker:latest
 
     steps:
       - name: Check code
