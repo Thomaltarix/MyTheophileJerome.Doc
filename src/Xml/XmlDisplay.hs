@@ -91,6 +91,18 @@ printXmlSpecialData handle (x:xs) spaces symbol_ = case x of
     Left _ -> printXmlSpecialData handle [x] spaces symbol_
     Right _ -> return ()
     >> printXmlSpecialData handle xs spaces symbol_
+
+printXmlContent :: Maybe Handle -> [Either Data Object] -> Int -> IO ()
+printXmlContent _ [] _ = return ()
+printXmlContent handle [Left data_] spaces =
+    printXmlData handle data_ spaces False
+printXmlContent handle [Right obj] spaces = printXmlObject handle obj spaces
+printXmlContent handle (Left data_:xs) spaces =
+    printXmlData handle data_ spaces False >>
+    printXmlContent handle xs spaces
+printXmlContent handle (Right obj:xs) spaces = printXmlObject handle obj spaces
+    >> printXmlContent handle xs spaces
+
 printXmlObjectStartSymbol :: Maybe Handle -> Object -> Int -> IO Bool
 printXmlObjectStartSymbol handle
     obj@(Object {objType = SectionT, objSymbol = Just "section"}) spaces =
@@ -178,6 +190,18 @@ printXmlHeader handle header_ spaces =
     printXmlHeaderData handle (date header_) (spaces + 4) >>
     printString handle endTag spaces
 
+printXmlBody :: Maybe Handle -> Object -> Int -> IO ()
+printXmlBody handle obj spaces =
+    let (startTag, endTag) = getXmlTag BodyT in
+    printString handle startTag spaces >>
+    printXmlContent handle (datas obj) (spaces + 4) >>
+    printString handle endTag spaces
+
 printXml :: Maybe Handle -> DataStruct -> IO ()
-printXml _ _ = putStrLn "XML"
+printXml handle dataStruct =
+    let (startTag, endTag) = getXmlTag DocumentT in
+    printString handle startTag 0 >>
     printXmlHeader handle (header dataStruct) 4 >>
+    printXmlBody handle (content dataStruct) 4 >>
+    printString handle endTag 0 >>
+    printString handle "\n" 0
