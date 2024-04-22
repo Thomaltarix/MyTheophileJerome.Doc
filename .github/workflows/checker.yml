@@ -70,12 +70,6 @@ jobs:
       - name: Check code
         uses: actions/checkout@v3
 
-      - name: Permissions bug workaround
-        run: "chown -R $(id -un):$(id -gn) ~"
-
-      - name: Git bug workaround
-        run: "chown -R $(id -un):$(id -gn) ."
-
       - name: Run tests
         run: |
           make tests_run
