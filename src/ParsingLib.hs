@@ -15,7 +15,11 @@ module ParsingLib (
     parseMany,
     parseSome,
     parseUInt,
-    parseInt
+    parseInt,
+    parseString,
+    (<|>),
+    parseStringQuote,
+    parseIntString
     ) where
 
 import Control.Applicative
@@ -129,4 +133,38 @@ parseInt = Parser p where
         Just (nb, str') -> Just (-nb, str')
         Nothing      -> Nothing
     p (x:str) = runParser parseUInt (x:str)
+    p [] = Nothing
+
+isSameString :: String -> String -> Bool
+isSameString [] _ = True
+isSameString _ [] = False
+isSameString (x:xs) (y:ys) = x == y && isSameString xs ys
+
+parseString :: String -> Parser String
+parseString strToMatch = Parser p where
+    p str
+        | isSameString strToMatch str =
+            Just (strToMatch, drop (length strToMatch) str)
+        | otherwise = Nothing
+
+parseStringQuote :: Parser String
+parseStringQuote = Parser p where
+    p ('\"':str) = case break (=='\"') str of
+        (quoted, rest) -> do
+            Just (quoted, drop 1 rest)
+    p _ = Nothing
+    
+
+parseUIntString :: Parser String
+parseUIntString = Parser p where
+    p str = do
+        (int, str') <- runParser (parseMany (parseAnyChar ['0'..'9'])) str
+        if int == "" then Nothing else Just (int, str')
+
+parseIntString :: Parser String
+parseIntString = Parser p where
+    p ('-':str) = case runParser parseUIntString str of
+        Just (nb, str') -> Just ('-':nb, str')
+        Nothing      -> Nothing
+    p (x:str) = runParser parseUIntString (x:str)
     p [] = Nothing

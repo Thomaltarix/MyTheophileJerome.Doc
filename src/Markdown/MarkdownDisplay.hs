@@ -20,7 +20,6 @@ getMarkdownObjectTag obj = case objType obj of
     ListT -> ("", "")
     CodeBlockT -> ("```", "```")
     LinkT -> ("[", "]")
-    ParagraphT -> ("", "")
     ImageT -> ("![", "]")
     AltT -> ("", "")
 
