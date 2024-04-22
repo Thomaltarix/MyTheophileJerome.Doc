@@ -55,11 +55,11 @@ tests:
 	@echo -e "\033[92mDone\033[0m"
 
 clean_tests:
-		@echo -ne "Clean tests: "
-		@rm -rf test/coverage
-		@rm -f $(COVERAGE_PATH)
-		@rm -f app/Main
-		@echo -e "\033[92mDone\033[0m"
+	@echo -ne "Clean tests: "
+	@rm -rf test/coverage
+	@rm -f $(COVERAGE_PATH)
+	@rm -f app/Main
+	@echo -e "\033[92mDone\033[0m"
 
 json_tests: $(NAME)
 	@pip install junit-xml
