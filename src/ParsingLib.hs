@@ -19,11 +19,13 @@ module ParsingLib (
     parseString,
     (<|>),
     parseStringQuote,
+    parseStringBalise,
     parseIntString
     ) where
 
 import Control.Applicative
-import Text.Read
+import Text.Read ( readMaybe )
+import Data.List ( stripPrefix )
 
 data Parser a = Parser {
     runParser :: String -> Maybe (a, String)
@@ -87,12 +89,11 @@ parseOr parser1 parser2 = Parser p where
 
 parseAnd :: Parser a -> Parser b -> Parser (a, b)
 parseAnd parser1 parser2 = Parser p where
-    p (x:xs) = case runParser parser1 (x:xs) of
-        Just (c, _) -> case runParser parser2 xs of
+    p str = case runParser parser1 str of
+        Just (c, str') -> case runParser parser2 str' of
             Just (c1, r) -> Just ((c, c1), r)
             Nothing      -> Nothing
         Nothing     -> Nothing
-    p [] = Nothing
 
 parseAndWith :: (a -> b -> c) -> Parser a -> Parser b -> Parser c
 parseAndWith ftc parser1 parser2 = Parser p where
@@ -153,7 +154,16 @@ parseStringQuote = Parser p where
         (quoted, rest) -> do
             Just (quoted, drop 1 rest)
     p _ = Nothing
-    
+
+parseStringBalise :: String -> Parser String
+parseStringBalise balise = Parser p where
+    p ('<':rest) = case stripPrefix balise rest of
+        Just rest' -> case stripPrefix ">" rest' of
+            Just content -> case break (== '<') content of
+                (balised, str) -> Just (balised, drop (3 + length balise) str)
+            Nothing -> Nothing
+        Nothing -> Nothing
+    p _ = Nothing
 
 parseUIntString :: Parser String
 parseUIntString = Parser p where

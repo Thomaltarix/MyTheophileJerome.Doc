@@ -16,6 +16,7 @@ import DataStructure (DataStruct)
 import Json.ParseJson
 import Control.Exception
 import System.IO
+import Xml.ParseXml (xmlParsing)
 
 myPandoc :: [String] -> IO ()
 myPandoc [] = displayUsage >> exitWith(ExitFailure 84)
@@ -28,7 +29,7 @@ runPandoc conf = do
     str <- myReadFile (getInputFile conf)
     case getStruct (getInputFormat (inputFormat conf) str) str of
         (Just d) -> handleOutput conf d
-        Nothing ->  displayUsage >> exitWith(ExitFailure 84)
+        Nothing -> displayUsage >> exitWith(ExitFailure 84)
 
 myReadFile :: String -> IO String
 myReadFile input = do
@@ -40,7 +41,7 @@ myReadFile input = do
 
 getStruct :: Maybe String -> String -> Maybe DataStruct
 getStruct (Just "json") str = jsonParsing str
--- getStruct (Just "xml") str = Nothing
+getStruct (Just "xml") str = xmlParsing str
 -- getStruct (Just "markdown") str = Nothing
 getStruct _ _ = Nothing
 
