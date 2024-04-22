@@ -62,5 +62,6 @@ clean_tests:
 		@echo -e "\033[92mDone\033[0m"
 
 json_tests: $(NAME)
+	@pip install junit-xml
 	@echo -ne "\nJson tests: \n"
 	@$(JSON_TESTER) $(JSON_TESTS) -d
