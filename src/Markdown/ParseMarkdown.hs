@@ -16,14 +16,14 @@ import DataStructure
 testmd :: IO ()
 testmd = readFile "tests/syntaxe.md" >>= print . markdownParsing
 
-markdownParsing :: String -> Maybe Header
+markdownParsing :: String -> Maybe DataStruct
 markdownParsing str =
     case getHeader str defaultHeader of
-        (Just h, str') -> Just h
-        -- (Just h, str') -> case getContent str' of
-        --     (Just c, _) -> Just DataStruct {
-        --         header = h,
-        --         content = c
-        --         }
-        --     (Nothing, _) -> Nothing
+        (Just h, str') -> --case getContent str' of
+            --(Just c, _) -> 
+            Just DataStruct {
+                header = h,
+                content = createObject ListT (Nothing) []
+                }
+            --(Nothing, _) -> Nothing
         (Nothing, _) -> Nothing
