@@ -9,6 +9,7 @@ module ParsingLib (
     Parser(..),
     parseChar,
     parseAnyChar,
+    parseAnyCharNotMatch,
     parseOr,
     parseAnd,
     parseAndWith,
@@ -19,11 +20,13 @@ module ParsingLib (
     parseString,
     (<|>),
     parseStringQuote,
+    parseStringTag,
     parseIntString
     ) where
 
 import Control.Applicative
-import Text.Read
+import Text.Read ( readMaybe )
+import Data.List ( stripPrefix )
 
 data Parser a = Parser {
     runParser :: String -> Maybe (a, String)
@@ -78,6 +81,13 @@ parseAnyChar (c:cs) = Parser p where
     p _ = Nothing
 parseAnyChar _ = Parser p where
     p _ = Nothing
+
+parseAnyCharNotMatch :: String -> Parser Char
+parseAnyCharNotMatch str = Parser p where
+    p (x:xs)
+        | x `elem` str = Nothing
+        | otherwise = Just (x, xs)
+    p [] = Nothing
 
 parseOr :: Parser a -> Parser a -> Parser a
 parseOr parser1 parser2 = Parser p where
@@ -153,7 +163,16 @@ parseStringQuote = Parser p where
         (quoted, rest) -> do
             Just (quoted, drop 1 rest)
     p _ = Nothing
-    
+
+parseStringTag :: String -> Parser String
+parseStringTag balise = Parser p where
+    p ('<':rest) = case stripPrefix balise rest of
+        Just rest' -> case stripPrefix ">" rest' of
+            Just content -> case break (== '<') content of
+                (balised, str) -> Just (balised, drop (3 + length balise) str)
+            Nothing -> Nothing
+        Nothing -> Nothing
+    p _ = Nothing
 
 parseUIntString :: Parser String
 parseUIntString = Parser p where

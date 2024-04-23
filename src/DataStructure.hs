@@ -90,9 +90,9 @@ defaultObject = Object
 createData :: Maybe String -> DataType -> Maybe String -> Data
 createData c t s = Data{dataContent = c, dataType = t, symbol = s}
 
-createObject :: ObjectType -> String -> [Either Data Object] -> Object
+createObject :: ObjectType -> Maybe String -> [Either Data Object] -> Object
 createObject t s d = Object {
     objType = t,
-    objSymbol  = Just s,
+    objSymbol  = s,
     datas = d
     }
