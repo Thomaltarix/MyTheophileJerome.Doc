@@ -22,7 +22,7 @@ module Xml.ParseContent (
 
 import ParsingLib
     ( parseAnyCharNotMatch,
-      parseStringBalise,
+      parseStringTag,
       parseString,
       parseMany,
       parseAnyChar,
@@ -81,19 +81,19 @@ parseText = do
 
 parseItalic :: Parser (Either Data Object)
 parseItalic = do
-    s <- parseStringBalise "italic"
+    s <- parseStringTag "italic"
     return (Right (createObject SectionT Nothing [Left (createData (Just s)
         BoldT (Just "italic"))]))
 
 parseBold :: Parser (Either Data Object)
 parseBold = do
-    b <- parseStringBalise "bold"
+    b <- parseStringTag "bold"
     return (Right (createObject SectionT Nothing [Left (createData (Just b)
         BoldT (Just "bold"))]))
 
 parseCode :: Parser (Either Data Object)
 parseCode = do
-    c <- parseStringBalise "code"
+    c <- parseStringTag "code"
     return (Right (createObject SectionT Nothing [Left (createData (Just c)
         BoldT (Just "code"))]))
 
