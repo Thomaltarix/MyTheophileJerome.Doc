@@ -15,14 +15,15 @@ module ParsingLib (
     parseAndWith,
     parseMany,
     parseSome,
-    parseUntil,
+    parseUntilChar,
     parseUInt,
     parseInt,
     parseString,
     (<|>),
     parseStringQuote,
     parseStringBalise,
-    parseIntString
+    parseIntString,
+    parseUntilString
     ) where
 
 import Control.Applicative
@@ -189,8 +190,15 @@ parseIntString = Parser p where
     p (x:str) = runParser parseUIntString (x:str)
     p [] = Nothing
 
-parseUntil :: Char -> Parser String
-parseUntil c = Parser p where
+parseUntilChar :: Char -> Parser String
+parseUntilChar c = Parser p where
     p str = case break (==c) str of
         (quoted, rest) -> Just (quoted, drop 1 rest)
     p _ = Nothing
+
+parseUntilString :: String -> Parser String ----- TO BE REWRITTEN
+parseUntilString target = Parser p
+  where
+    p str = case break (== head target) str of
+      (prefix, rest) | length prefix >= length target && take (length target) prefix == target -> Just (target, drop (length target) rest)
+      _ -> Nothing
