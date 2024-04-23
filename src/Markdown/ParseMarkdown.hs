@@ -13,16 +13,17 @@ import Markdown.ParseHeader(getHeader)
 import Markdown.ParseContent
 import DataStructure
 
--- test :: IO ()
--- test = readFile "example/syntaxe.md" >>= print . markdownParsing
+testmd :: IO ()
+testmd = readFile "tests/syntaxe.md" >>= print . markdownParsing
 
-markdownParsing :: String -> Maybe DataStruct
+markdownParsing :: String -> Maybe Header
 markdownParsing str =
     case getHeader str defaultHeader of
-        (Just h, str') -> case getContent str' of
-            (Just c, _) -> Just DataStruct {
-                header = h,
-                content = c
-                }
-            (Nothing, _) -> Nothing
+        (Just h, str') -> Just h
+        -- (Just h, str') -> case getContent str' of
+        --     (Just c, _) -> Just DataStruct {
+        --         header = h,
+        --         content = c
+        --         }
+        --     (Nothing, _) -> Nothing
         (Nothing, _) -> Nothing

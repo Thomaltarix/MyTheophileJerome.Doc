@@ -32,38 +32,32 @@ markdownHeader str h =
 
 markdownHeaderParsing :: Parser ((MarkdownValue, String), (MarkdownValue, String), (MarkdownValue, String))
 markdownHeaderParsing = do
-    _ <- parseAnd (parseChar '{') (parseMany (parseAnyChar " \n\t"))
-    _ <- parseString "\"header\":"
-    _ <- parseMany (parseAnyChar " \n\t")
-    _ <- parseAnd (parseChar '{') (parseMany (parseAnyChar " \n\t"))
-    a <- markdownTitleParse<|>markdownAuthorParse<|>markdownDateParse<|>markdownVoidParse
-    b <- markdownTitleParse<|>markdownAuthorParse<|>markdownDateParse<|>markdownVoidParse
-    c <- markdownTitleParse<|>markdownAuthorParse<|>markdownDateParse<|>markdownVoidParse
-    _ <- parseAnd (parseChar '}') (parseMany (parseAnyChar " \n\t,"))
+    _ <- parseString "---\n"
+    a <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
+    b <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
+    c <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
+    parseString "---\n"
     return (a, b, c)
 
 markdownTitleParse :: Parser (MarkdownValue, String)
 markdownTitleParse = do
-    _ <- parseString "\"title\":"
-    _ <- parseMany (parseAnyChar " \n\t")
-    a <- parseStringQuote
-    _ <- parseMany (parseAnyChar " \n\t,")
+    _ <- parseString "title: "
+    a <- parseUntil '\n'
+    _ <- parseMany (parseAnyChar "\n \t")
     return (MarkdownTitle, a)
 
 markdownAuthorParse :: Parser (MarkdownValue, String)
 markdownAuthorParse = do
-    _ <- parseString "\"author\":"
-    _ <- parseMany (parseAnyChar " \n\t")
-    a <- parseStringQuote
-    _ <- parseMany (parseAnyChar " \n\t,")
+    _ <- parseString "author: "
+    a <- parseUntil '\n'
+    _ <- parseMany (parseAnyChar "\n \t")
     return (MarkdownAuthor, a)
 
 markdownDateParse :: Parser (MarkdownValue, String)
 markdownDateParse = do
-    _ <- parseString "\"date\":"
-    _ <- parseMany (parseAnyChar " \n\t")
-    a <- parseStringQuote
-    _ <- parseMany (parseAnyChar " \n\t,")
+    _ <- parseString "date: "
+    a <- parseUntil '\n'
+    _ <- parseMany (parseAnyChar "\n \t")
     return (MarkdownDate, a)
 
 markdownVoidParse :: Parser (MarkdownValue, String)

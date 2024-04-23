@@ -15,6 +15,7 @@ module ParsingLib (
     parseAndWith,
     parseMany,
     parseSome,
+    parseUntil,
     parseUInt,
     parseInt,
     parseString,
@@ -187,3 +188,9 @@ parseIntString = Parser p where
         Nothing      -> Nothing
     p (x:str) = runParser parseUIntString (x:str)
     p [] = Nothing
+
+parseUntil :: Char -> Parser String
+parseUntil c = Parser p where
+    p str = case break (==c) str of
+        (quoted, rest) -> Just (quoted, drop 1 rest)
+    p _ = Nothing
