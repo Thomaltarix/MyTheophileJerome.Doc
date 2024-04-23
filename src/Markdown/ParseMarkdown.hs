@@ -2,22 +2,22 @@
 -- EPITECH PROJECT, 2023
 -- MyPandoc
 -- File description:
--- ParseJson
+-- ParseMarkdown
 -}
 
-module Json.ParseJson (
-    jsonParsing
+module Markdown.ParseMarkdown (
+    markdownParsing
     ) where
 
-import Json.ParseHeader(getHeader)
-import Json.ParseContent
+import Markdown.ParseHeader(getHeader)
+import Markdown.ParseContent
 import DataStructure
 
 -- test :: IO ()
--- test = readFile "example/syntaxe.md" >>= print . jsonParsing
+-- test = readFile "example/syntaxe.md" >>= print . markdownParsing
 
-jsonParsing :: String -> Maybe DataStruct
-jsonParsing str =
+markdownParsing :: String -> Maybe DataStruct
+markdownParsing str =
     case getHeader str defaultHeader of
         (Just h, str') -> case getContent str' of
             (Just c, _) -> Just DataStruct {

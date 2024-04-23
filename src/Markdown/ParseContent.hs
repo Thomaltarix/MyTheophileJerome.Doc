@@ -5,7 +5,7 @@
 -- ParseContent
 -}
 
-module Json.ParseContent (
+module Markdown.ParseContent (
     getContent
     ) where
 
@@ -14,26 +14,26 @@ import ParsingLib
 import DataStructure
 
 getContent :: String -> (Maybe Object, String)
-getContent str = case runParser parseJsonBody str of
+getContent str = case runParser parseMarkdownBody str of
     Nothing -> (Nothing, str)
     Just (c, str') -> (Just c, str')
 
 concatList :: Maybe String -> ObjectType -> Object -> Parser Object
 concatList str t o = do
-    a <- concat <$> parseMany ((:[]) <$> (parseJsonArray <|> parseJsonObject
-        <|> parseJsonStringQuote <|> parseJsonInt))
+    a <- concat <$> parseMany ((:[]) <$> (parseMarkdownArray <|> parseMarkdownObject
+        <|> parseMarkdownStringQuote <|> parseMarkdownInt))
     return o{objType = t, objSymbol = str, datas = a}
 
 concatObject :: Maybe String -> ObjectType -> Object -> Parser Object
 concatObject str t o = do
-    a <- concat <$> parseMany ((:[]) <$> (parseJsonSection <|> parseJsonTitle
-        <|> parseJsonContent <|> parseJsonBold <|> parseJsonItalic <|>
-        parseJsonCode <|> parseJsonCodeBlock <|> parseJsonList <|> parseJsonUrl
-        <|> parseJsonImage <|> parseJsonAlt <|> parseJsonLink))
+    a <- concat <$> parseMany ((:[]) <$> (parseMarkdownSection <|> parseMarkdownTitle
+        <|> parseMarkdownContent <|> parseMarkdownBold <|> parseMarkdownItalic <|>
+        parseMarkdownCode <|> parseMarkdownCodeBlock <|> parseMarkdownList <|> parseMarkdownUrl
+        <|> parseMarkdownImage <|> parseMarkdownAlt <|> parseMarkdownLink))
     return o{objType = t, objSymbol = str, datas = a}
 
-parseJsonBody :: Parser Object
-parseJsonBody = do
+parseMarkdownBody :: Parser Object
+parseMarkdownBody = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"body\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -44,8 +44,8 @@ parseJsonBody = do
     _ <- parseChar '}'
     return a
 
-parseJsonArray :: Parser (Either Data Object)
-parseJsonArray = do
+parseMarkdownArray :: Parser (Either Data Object)
+parseMarkdownArray = do
     _ <- parseAnd (parseChar '[') (parseMany (parseAnyChar " \n\t"))
     a <- concatList Nothing ListT defaultObject
     _ <- parseMany (parseAnyChar " \n\t")
@@ -53,8 +53,8 @@ parseJsonArray = do
     _ <- parseMany (parseAnyChar " \n\t,")
     return (Right a)
 
-parseJsonObject :: Parser (Either Data Object)
-parseJsonObject = do
+parseMarkdownObject :: Parser (Either Data Object)
+parseMarkdownObject = do
     _ <- parseAnd (parseChar '{') (parseMany (parseAnyChar " \n\t"))
     a <- concatObject Nothing SectionT defaultObject
     _ <- parseMany (parseAnyChar " \n\t")
@@ -62,8 +62,8 @@ parseJsonObject = do
     _ <- parseMany (parseAnyChar " \n\t,")
     return (Right a)
 
-parseJsonSection :: Parser (Either Data Object)
-parseJsonSection = do
+parseMarkdownSection :: Parser (Either Data Object)
+parseMarkdownSection = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"section\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -74,8 +74,8 @@ parseJsonSection = do
     _ <- parseChar '}'
     return (Right a)
 
-parseJsonTitle :: Parser (Either Data Object)
-parseJsonTitle = do
+parseMarkdownTitle :: Parser (Either Data Object)
+parseMarkdownTitle = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"title\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -83,8 +83,8 @@ parseJsonTitle = do
     _ <- parseMany (parseAnyChar " \n\t,")
     return (Left (createData (Just a) TextT (Just "title")))
 
-parseJsonContent :: Parser (Either Data Object)
-parseJsonContent = do
+parseMarkdownContent :: Parser (Either Data Object)
+parseMarkdownContent = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"content\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -95,8 +95,8 @@ parseJsonContent = do
     _ <- parseChar ']'
     return (Right a)
 
-parseJsonBold :: Parser (Either Data Object)
-parseJsonBold = do
+parseMarkdownBold :: Parser (Either Data Object)
+parseMarkdownBold = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"bold\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -104,8 +104,8 @@ parseJsonBold = do
     _ <- parseMany (parseAnyChar " \n\t,")
     return (Left (createData (Just a) BoldT (Just "bold")))
 
-parseJsonItalic :: Parser (Either Data Object)
-parseJsonItalic = do
+parseMarkdownItalic :: Parser (Either Data Object)
+parseMarkdownItalic = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"italic\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -113,8 +113,8 @@ parseJsonItalic = do
     _ <- parseMany (parseAnyChar " \n\t,")
     return (Left (createData (Just a) ItalicT (Just "italic")))
 
-parseJsonCode :: Parser (Either Data Object)
-parseJsonCode = do
+parseMarkdownCode :: Parser (Either Data Object)
+parseMarkdownCode = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"code\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -122,8 +122,8 @@ parseJsonCode = do
     _ <- parseMany (parseAnyChar " \n\t,")
     return (Left (createData (Just a) CodeT (Just "code")))
 
-parseJsonCodeBlock ::Parser (Either Data Object)
-parseJsonCodeBlock = do
+parseMarkdownCodeBlock ::Parser (Either Data Object)
+parseMarkdownCodeBlock = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"codeblock\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -134,8 +134,8 @@ parseJsonCodeBlock = do
     _ <- parseChar ']'
     return (Right a)
 
-parseJsonList :: Parser (Either Data Object)
-parseJsonList = do
+parseMarkdownList :: Parser (Either Data Object)
+parseMarkdownList = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"list\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -146,8 +146,8 @@ parseJsonList = do
     _ <- parseAnd (parseChar ']') (parseMany (parseAnyChar " \n\t,"))
     return (Right a)
 
-parseJsonUrl :: Parser (Either Data Object)
-parseJsonUrl = do
+parseMarkdownUrl :: Parser (Either Data Object)
+parseMarkdownUrl = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"url\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -155,8 +155,8 @@ parseJsonUrl = do
     _ <- parseMany (parseAnyChar " \n\t,")
     return (Left (createData (Just a) TextT (Just "url")))
 
-parseJsonImage :: Parser (Either Data Object)
-parseJsonImage = do
+parseMarkdownImage :: Parser (Either Data Object)
+parseMarkdownImage = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"image\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -167,8 +167,8 @@ parseJsonImage = do
     _ <- parseChar '}'
     return (Right a)
 
-parseJsonAlt :: Parser (Either Data Object)
-parseJsonAlt = do
+parseMarkdownAlt :: Parser (Either Data Object)
+parseMarkdownAlt = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"alt\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -179,8 +179,8 @@ parseJsonAlt = do
     _ <- parseChar ']'
     return (Right a)
 
-parseJsonLink :: Parser (Either Data Object)
-parseJsonLink = do
+parseMarkdownLink :: Parser (Either Data Object)
+parseMarkdownLink = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "\"link\":"
     _ <- parseMany (parseAnyChar " \n\t")
@@ -191,15 +191,15 @@ parseJsonLink = do
     _ <- parseChar '}'
     return (Right a)
 
-parseJsonStringQuote :: Parser (Either Data Object)
-parseJsonStringQuote = do
+parseMarkdownStringQuote :: Parser (Either Data Object)
+parseMarkdownStringQuote = do
     _ <- parseMany (parseAnyChar " \n\t")
     a <- parseStringQuote
     _ <- parseMany (parseAnyChar " \n\t,")
     return (Left (createData (Just a) TextT Nothing))
 
-parseJsonInt :: Parser (Either Data Object)
-parseJsonInt = do
+parseMarkdownInt :: Parser (Either Data Object)
+parseMarkdownInt = do
     _ <- parseMany (parseAnyChar " \n\t")
     a <- parseIntString
     _ <- parseMany (parseAnyChar " \n\t,")
