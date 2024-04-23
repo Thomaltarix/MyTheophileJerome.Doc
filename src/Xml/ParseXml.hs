@@ -11,7 +11,8 @@ module Xml.ParseXml (
     ) where
 
 import Xml.ParseHeader(getHeader)
-import DataStructure
+import Xml.ParseContent(getContent)
+import DataStructure ( defaultHeader, DataStruct(..) )
 
 test :: IO ()
 test = readFile "example/syntaxe.xml" >>= print . xmlParsing
@@ -19,8 +20,10 @@ test = readFile "example/syntaxe.xml" >>= print . xmlParsing
 xmlParsing :: String -> Maybe DataStruct
 xmlParsing str =
     case getHeader str defaultHeader of
-        (Just h, _) -> Just DataStruct {
+        (Just h, str') -> case getContent str' of
+            (Just c, _) -> Just DataStruct {
                 header = h,
-                content = defaultObject
+                content = c
                 }
+            (Nothing, _) -> Nothing
         (Nothing, _) -> Nothing

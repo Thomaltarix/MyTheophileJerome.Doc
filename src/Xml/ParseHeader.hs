@@ -6,7 +6,7 @@
 -}
 
 module Xml.ParseHeader (
-    getHeader,
+    getHeader
     ) where
 
 import ParsingLib
@@ -32,32 +32,38 @@ xmlHeader str h =
 
 xmlHeaderParsing :: Parser ((XmlValue, String), (XmlValue, String), (XmlValue, String))
 xmlHeaderParsing = do
-    _ <- parseAnd (parseString "<document>") (parseMany (parseAnyChar " \n\t"))
-    _ <- parseString "<header"
+    _ <- parseString "<document>"
     _ <- parseMany (parseAnyChar " \n\t")
+    _ <- parseString "<header"
+    _ <- parseMany (parseChar ' ')
     a <- xmlTitleParse<|>xmlAuthorParse<|>xmlDateParse<|>xmlVoidParse
     b <- xmlTitleParse<|>xmlAuthorParse<|>xmlDateParse<|>xmlVoidParse
     c <- xmlTitleParse<|>xmlAuthorParse<|>xmlDateParse<|>xmlVoidParse
-    _ <- parseAnd (parseString "</header>") (parseMany (parseAnyChar " \n\t,"))
+    _ <- parseString "</header>"
+    _ <- parseMany (parseAnyChar " \n\t")
     return (a, b, c)
 
 xmlTitleParse :: Parser (XmlValue, String)
 xmlTitleParse = do
     _ <- parseString "title="
     a <- parseStringQuote
-    _ <- parseMany (parseAnyChar " \n\t>")
+    _ <- parseMany (parseAnyChar " \n\t")
+    _ <- parseChar '>'
+    _ <- parseMany (parseAnyChar " \n\t")
     return (XmlTitle, a)
 
 xmlAuthorParse :: Parser (XmlValue, String)
 xmlAuthorParse = do
+    _ <- parseMany (parseAnyChar " \n\t")
     a <- parseStringBalise "author"
-    _ <- parseMany (parseAnyChar " \n\t,")
+    _ <- parseMany (parseAnyChar " \n\t")
     return (XmlAuthor, a)
 
 xmlDateParse :: Parser (XmlValue, String)
 xmlDateParse = do
+    _ <- parseMany (parseAnyChar " \n\t")
     a <- parseStringBalise "date"
-    _ <- parseMany (parseAnyChar " \n\t,")
+    _ <- parseMany (parseAnyChar " \n\t")
     return (XmlDate, a)
 
 xmlVoidParse :: Parser (XmlValue, String)

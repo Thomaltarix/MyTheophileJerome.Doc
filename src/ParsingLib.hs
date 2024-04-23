@@ -9,6 +9,7 @@ module ParsingLib (
     Parser(..),
     parseChar,
     parseAnyChar,
+    parseAnyCharNotMatch,
     parseOr,
     parseAnd,
     parseAndWith,
@@ -81,6 +82,13 @@ parseAnyChar (c:cs) = Parser p where
 parseAnyChar _ = Parser p where
     p _ = Nothing
 
+parseAnyCharNotMatch :: String -> Parser Char
+parseAnyCharNotMatch str = Parser p where
+    p (x:xs)
+        | x `elem` str = Nothing
+        | otherwise = Just (x, xs)
+    p [] = Nothing
+
 parseOr :: Parser a -> Parser a -> Parser a
 parseOr parser1 parser2 = Parser p where
     p str = case runParser parser1 str of
@@ -89,11 +97,12 @@ parseOr parser1 parser2 = Parser p where
 
 parseAnd :: Parser a -> Parser b -> Parser (a, b)
 parseAnd parser1 parser2 = Parser p where
-    p str = case runParser parser1 str of
-        Just (c, str') -> case runParser parser2 str' of
+    p (x:xs) = case runParser parser1 (x:xs) of
+        Just (c, _) -> case runParser parser2 xs of
             Just (c1, r) -> Just ((c, c1), r)
             Nothing      -> Nothing
         Nothing     -> Nothing
+    p [] = Nothing
 
 parseAndWith :: (a -> b -> c) -> Parser a -> Parser b -> Parser c
 parseAndWith ftc parser1 parser2 = Parser p where
