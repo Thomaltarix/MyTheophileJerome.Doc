@@ -39,8 +39,7 @@ xmlHeaderParsing = do
     a <- xmlTitleParse<|>xmlAuthorParse<|>xmlDateParse<|>xmlVoidParse
     b <- xmlTitleParse<|>xmlAuthorParse<|>xmlDateParse<|>xmlVoidParse
     c <- xmlTitleParse<|>xmlAuthorParse<|>xmlDateParse<|>xmlVoidParse
-    _ <- parseString "</header>"
-    _ <- parseMany (parseAnyChar " \n\t")
+    _ <- parseAnd (parseString "</header>") (parseMany (parseAnyChar " \n\t"))
     return (a, b, c)
 
 xmlTitleParse :: Parser (XmlValue, String)
