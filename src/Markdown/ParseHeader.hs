@@ -32,11 +32,12 @@ markdownHeader str h =
 
 markdownHeaderParsing :: Parser ((MarkdownValue, String), (MarkdownValue, String), (MarkdownValue, String))
 markdownHeaderParsing = do
-    _ <- parseString "---\n"
+    _ <- parseString "---"
+    _ <- parseMany (parseAnyChar "\n \t")
     a <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
     b <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
     c <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
-    parseString "---\n"
+    _ <- parseString "---\n"
     return (a, b, c)
 
 markdownTitleParse :: Parser (MarkdownValue, String)
