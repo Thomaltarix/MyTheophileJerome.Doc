@@ -6,16 +6,12 @@
 -}
 
 module Xml.ParseXml (
-    xmlParsing,
-    test
+    xmlParsing
     ) where
 
 import Xml.ParseHeader(getHeader)
 import Xml.ParseContent(getContent)
 import DataStructure ( defaultHeader, DataStruct(..) )
-
-test :: IO ()
-test = readFile "example/syntaxe.xml" >>= print . xmlParsing
 
 xmlParsing :: String -> Maybe DataStruct
 xmlParsing str =
