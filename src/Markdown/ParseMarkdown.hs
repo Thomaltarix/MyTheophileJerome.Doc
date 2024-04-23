@@ -19,11 +19,22 @@ testmd = readFile "tests/syntaxe.md" >>= print . markdownParsing
 markdownParsing :: String -> Maybe DataStruct
 markdownParsing str =
     case getHeader str defaultHeader of
-        (Just h, str') -> --case getContent str' of
-            --(Just c, _) -> 
-            Just DataStruct {
+        (Just h, str') -> case getContent str' of
+            (Just c, _) -> Just DataStruct {
                 header = h,
-                content = createObject ListT (Nothing) []
+                content = c
                 }
-            --(Nothing, _) -> Nothing
+            (Nothing, _) -> Nothing
         (Nothing, _) -> Nothing
+
+
+-- markdownParsing str =
+--     case getHeader str defaultHeader of
+--         (Just h, str') -> --case getContent str' of
+--             --(Just c, _) -> 
+--                 Just DataStruct {
+--                 header = h,
+--                 content = createObject ListT (Nothing) []
+--                 }
+--             --(Nothing, _) -> Nothing
+--         (Nothing, _) -> Nothing

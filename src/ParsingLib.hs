@@ -196,9 +196,9 @@ parseUntilChar c = Parser p where
         (quoted, rest) -> Just (quoted, drop 1 rest)
     p _ = Nothing
 
-parseUntilString :: String -> Parser String ----- TO BE REWRITTEN
-parseUntilString target = Parser p
+parseUntilString :: String -> Parser String --TO REWRITE
+parseUntilString goal = Parser p
   where
-    p str = case break (== head target) str of
-      (prefix, rest) | length prefix >= length target && take (length target) prefix == target -> Just (target, drop (length target) rest)
+    p str = case break (== head goal) str of
+      (pfx, rst) | length pfx >= length goal && take (length goal) pfx == goal -> Just (goal, drop (length goal) rst)
       _ -> Nothing
