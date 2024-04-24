@@ -30,13 +30,13 @@ concatList =
 parseParagraph :: Parser (Either Data Object)
 parseParagraph = do
     _ <- parseMany (parseAnyChar "\n \t")
-    o <- concat <$> parseMany ((:[]) <$> (parseBold <|> parseItalic <|> parseLink <|> parseCode <|> parseText   )) --  <|>  <|> parseImage 
+    o <- concat <$> parseMany ((:[]) <$> (parseBold <|> parseItalic <|> parseImage <|> parseLink <|> parseCode <|> parseText   ))
     _ <- parseString "\n"
     return (Right (createObject ListT Nothing o))
 
 parseText :: Parser (Either Data Object)
 parseText = do
-    t <- parseSome (parseAnyCharNotMatch "\n`*[")
+    t <- parseSome (parseAnyCharNotMatch "\n`*[!")
     return (Left (createData (Just t) TextT Nothing))
 
 parseItalic :: Parser (Either Data Object)
@@ -84,16 +84,18 @@ parseCodeBlock = do
 --         ListT (Just "list") gcontent)]))
 
 
--- parseImage :: Parser (Either Data Object)
--- parseImage = do
---     _ <- parseMany (parseAnyChar " \n\t")
---     _ <- parseString "<image"
---     _ <- parseMany (parseAnyChar " \n\t")
---     gcontent <- concatImage
---     _ <- parseMany (parseAnyChar " \n\t")
---     _ <- parseString "</image>"
---     _ <- parseMany (parseAnyChar " \n\t")
---     return (Right (createObject SectionT Nothing [Right gcontent]))
+parseImage :: Parser (Either Data Object)
+parseImage = do
+    _ <- parseMany (parseAnyChar " \n\t")
+    _ <- parseChar '!'
+    _ <- parseChar '['
+    alt <- parseUntilChar ']'
+    _ <- parseChar '('
+    url <- parseUntilChar ')'
+    return $ Right $ createObject SectionT Nothing [Right (createObject ImageT (Just "image") [Left (createData (Just url) TextT (Just "url")), Right (createObject ListT (Just "alt") [Left (createData (Just alt) TextT Nothing)])])]
+
+
+
 
 -- parseSection :: Parser (Either Data Object)
 -- parseSection = do
