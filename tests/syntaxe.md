@@ -33,4 +33,3 @@ Every syntax element can be use separately or combined.
 Think about the different possible combinations.
 
 All combined syntax elements aren't displayed in this document.
-

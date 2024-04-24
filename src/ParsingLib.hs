@@ -17,6 +17,7 @@ module ParsingLib (
     parseSome,
     parseUntilChar,
     parseUInt,
+    checkNotChar,
     parseInt,
     parseString,
     (<|>),
@@ -72,6 +73,13 @@ parseChar :: Char -> Parser Char
 parseChar c = Parser p where
     p (x:xs)
         | x == c = Just (c, xs)
+        | otherwise = Nothing
+    p _ = Nothing
+
+checkNotChar :: Char -> Parser Char
+checkNotChar c = Parser p where
+    p str@(x:xs)
+        | x /= c = Just (c, str)
         | otherwise = Nothing
     p _ = Nothing
 
@@ -196,9 +204,10 @@ parseUntilChar c = Parser p where
         (quoted, rest) -> Just (quoted, drop 1 rest)
     p _ = Nothing
 
-parseUntilString :: String -> Parser String --TO REWRITE
-parseUntilString goal = Parser p
-  where
-    p str = case break (== head goal) str of
-      (pfx, rst) | length pfx >= length goal && take (length goal) pfx == goal -> Just (goal, drop (length goal) rst)
-      _ -> Nothing
+parseUntilString :: String -> Parser String -- TO REWRITE // fwd only 2 char - update for * ```
+parseUntilString (x:y:_) = Parser p where
+    p str = case break (==x) str of
+        (comprd, rst) -> case stripPrefix [x, y] rst of
+            Just rst' -> Just (comprd, rst')
+            Nothing -> Nothing
+    p _ = Nothing

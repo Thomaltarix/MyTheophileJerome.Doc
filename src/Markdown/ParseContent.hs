@@ -13,39 +13,35 @@ import DataStructure
 
 
 getContent :: String -> (Maybe Object, String)
-getContent str = case runParser parseXmlBody str of
+getContent str = case runParser parseMdBody str of
     Nothing -> (Nothing, str)
     Just (c, str') -> (Just c, str')
 
-parseXmlBody :: Parser Object
-parseXmlBody = do
-    _ <- parseMany (parseAnyChar " \n\t")
+parseMdBody :: Parser Object
+parseMdBody = do
     a <- concatList
     return (createObject ListT (Just "body") a)
 
 concatList :: Parser [Either Data Object]
 concatList =
-    concat <$> parseMany ((:[]) <$> (parseParagraph )) -- <|> parseSection <|> parseCodeBlock <|> parseList)
+    concat <$> parseMany ((:[]) <$> (parseCodeBlock <|> parseParagraph )) -- <|>  <|>parseSection   <|> parseList)
+
 
 parseParagraph :: Parser (Either Data Object)
 parseParagraph = do
-    _ <- parseMany (parseAnyChar " \n\t")
-    o <- concat <$> parseMany ((:[]) <$> (parseItalic <|> parseBold <|> parseCode <|> parseText )) --  <|> parseLink <|> parseImage
-    _ <- (parseAnyChar " \n\t")
+    o <- concat <$> parseMany ((:[]) <$> (parseBold <|> parseItalic <|> parseCode <|> parseText   )) --  <|> parseLink <|> parseImage 
+    _ <- parseString "\n"
     return (Right (createObject ListT Nothing o))
 
 parseText :: Parser (Either Data Object)
 parseText = do
-    t <- parseSome (parseAnyCharNotMatch "\n")
+    t <- parseSome (parseAnyCharNotMatch "\n`*") -- #
     return (Left (createData (Just t) TextT Nothing))
-
---fjdkqlmf
 
 parseItalic :: Parser (Either Data Object)
 parseItalic = do
-    _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseChar '*'
-    s <- parseSome (parseAnyCharNotMatch "*")
+    s <- parseUntilChar '*'
     return (Right (createObject SectionT Nothing [Left (createData (Just s)
         BoldT (Just "italic"))]))
 
@@ -59,6 +55,7 @@ parseBold = do
 parseCode :: Parser (Either Data Object)
 parseCode = do
     _ <- parseChar '`'
+    _ <- checkNotChar '`'
     c <- parseUntilChar '`'
     return (Right (createObject SectionT Nothing [Left (createData (Just c)
         BoldT (Just "code"))]))
@@ -83,17 +80,15 @@ parseCode = do
 --         (Just "section") [title, Right (createObject ListT (Just "gcontent")
 --         gcontent)])]))
 
--- parseCodeBlock :: Parser (Either Data Object)
--- parseCodeBlock = do
---     _ <- parseMany (parseAnyChar " \n\t")
---     _ <- parseString "<codeblock>"
---     _ <- parseMany (parseAnyChar " \n\t")
---     gcontent <- concatList
---     _ <- parseMany (parseAnyChar " \n\t")
---     _ <- parseString "</codeblock>"
---     _ <- parseMany (parseAnyChar " \n\t")
---     return (Right (createObject SectionT Nothing [Right (createObject
---         CodeBlockT (Just "codeblock") gcontent)]))
+parseCodeBlock :: Parser (Either Data Object)
+parseCodeBlock = do
+    -- _ <- parseMany (parseAnyChar " \n\t")
+    _ <- parseString "```"
+    c <- parseUntilString "```"
+    _ <- parseChar '`' -- MUST TO SKIP FIN WTF 
+    -- _ <- parseMany (parseAnyChar " \n\t")
+    return (Right (createObject SectionT Nothing [Left (createData (Just c)
+        CodeT (Just "code"))]))
 
 -- parseList :: Parser (Either Data Object)
 -- parseList = do
