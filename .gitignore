@@ -26,4 +26,3 @@ cabal.project.local~
 *~
 MyPandoc.cabal
 stack.yaml.lock
-examples/
