@@ -1,0 +1,11 @@
+[
+    {
+        "testName": "Test Json-To-Json-1",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "examples/syntaxe.json", "-f", "json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "examples/syntaxe.json",
+        "expectedStderrOutput": ""
+    }
+]

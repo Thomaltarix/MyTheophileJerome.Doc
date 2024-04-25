@@ -24,9 +24,10 @@ module ParsingLib (
     failingParse,
     (<|>),
     parseStringQuote,
-    parseStringBalise,
     parseIntString,
-    parseUntilString
+    parseUntilString,
+    parseStringTag,
+    parseIntString
     ) where
 
 import Control.Applicative
@@ -188,8 +189,8 @@ parseStringQuote = Parser p where
             Just (quoted, drop 1 rest)
     p _ = Nothing
 
-parseStringBalise :: String -> Parser String
-parseStringBalise balise = Parser p where
+parseStringTag :: String -> Parser String
+parseStringTag balise = Parser p where
     p ('<':rest) = case stripPrefix balise rest of
         Just rest' -> case stripPrefix ">" rest' of
             Just content -> case break (== '<') content of

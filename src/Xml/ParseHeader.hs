@@ -54,14 +54,14 @@ xmlTitleParse = do
 xmlAuthorParse :: Parser (XmlValue, String)
 xmlAuthorParse = do
     _ <- parseMany (parseAnyChar " \n\t")
-    a <- parseStringBalise "author"
+    a <- parseStringTag "author"
     _ <- parseMany (parseAnyChar " \n\t")
     return (XmlAuthor, a)
 
 xmlDateParse :: Parser (XmlValue, String)
 xmlDateParse = do
     _ <- parseMany (parseAnyChar " \n\t")
-    a <- parseStringBalise "date"
+    a <- parseStringTag "date"
     _ <- parseMany (parseAnyChar " \n\t")
     return (XmlDate, a)
 

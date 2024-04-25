@@ -7,9 +7,7 @@
 
 import Test.Hspec
 
-main :: IO ()
-main = hspec $ do
-    describe "add" $ do
+import TestParserJson
 
-        it "should add two numbers" $ do
-            (1 :: Int) + 1 `shouldBe` 2
+main :: IO ()
+main = jsonTestsParsing
