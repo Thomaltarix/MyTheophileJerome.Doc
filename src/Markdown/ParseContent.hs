@@ -38,9 +38,74 @@ parseHeaderOne = do
             ])
         ]))
 
+parseHeaderTwo :: Parser (Either Data Object)
+parseHeaderTwo = do
+    _ <- parseMany (parseAnyChar "\n \t")
+    _ <- parseString "## "
+    title <- parseUntilChar '\n'
+    content <- concatList
+    return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just title) TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") content))
+            ])
+        ]))
+
+parseHeaderThree :: Parser (Either Data Object)
+parseHeaderThree = do
+    _ <- parseMany (parseAnyChar "\n \t")
+    _ <- parseString "### "
+    title <- parseUntilChar '\n'
+    content <- concatList
+    return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just title) TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") content))
+            ])
+        ]))
+
+parseHeaderFour :: Parser (Either Data Object)
+parseHeaderFour = do
+    _ <- parseMany (parseAnyChar "\n \t")
+    _ <- parseString "#### "
+    title <- parseUntilChar '\n'
+    content <- concatList
+    return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just title) TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") content))
+            ])
+        ]))
+
+parseHeaderFive :: Parser (Either Data Object)
+parseHeaderFive = do
+    _ <- parseMany (parseAnyChar "\n \t")
+    _ <- parseString "##### "
+    title <- parseUntilChar '\n'
+    content <- concatList
+    return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just title) TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") content))
+            ])
+        ]))
+
+parseHeaderSix :: Parser (Either Data Object)
+parseHeaderSix = do
+    _ <- parseMany (parseAnyChar "\n \t")
+    _ <- parseString "###### "
+    title <- parseUntilChar '\n'
+    content <- concatList
+    return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just title) TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") content))
+            ])
+        ]))
+
 concatList :: Parser [Either Data Object]
 concatList =
-    concat <$> parseMany ((:[]) <$> (parseHeaderOne <|> parseCodeBlock <|> parseListBlock  <|> parseParagraph ))
+    concat <$> parseMany ((:[]) <$> (parseHeaderSix <|> parseHeaderFive <|> parseHeaderFour <|> parseHeaderThree <|> parseHeaderTwo <|> parseHeaderOne <|> parseCodeBlock <|> parseListBlock  <|> parseParagraph ))
 
 parseListBlock :: Parser (Either Data Object)
 parseListBlock = do
