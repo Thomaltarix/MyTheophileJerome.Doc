@@ -27,14 +27,14 @@ getXmlObjectTag obj = case objType obj of
     SectionT -> ("<section", "</section>\n")
     ListT -> ("<list>\n", "</list>\n")
     CodeBlockT -> ("<codeblock>\n", "</codeblock>\n")
-    LinkT -> ("<link", "</link>\n")
-    ParagraphT -> ("<paragraph", "</paragraph>\n")
-    ImageT -> ("<image", "</image>\n")
+    LinkT -> ("<link", "</link>")
+    ParagraphT -> ("<paragraph>", "</paragraph>\n")
+    ImageT -> ("<image", "</image>")
     AltT -> ("", "")
 
 getXmlDataTag :: Data -> (String, String)
 getXmlDataTag data_ = case dataType data_ of
-    TextT -> ("<paragraph>", "</paragraph>\n")
+    TextT -> ("", "")
     ItalicT -> ("<italic>", "</italic>")
     BoldT -> ("<bold>", "</bold>")
     CodeT -> ("<code>", "</code>")
@@ -76,29 +76,32 @@ printXmlData handle data_@(Data {dataType = TextT}) spaces _ =
     printString handle (myFromJustString (dataContent data_)) 0 >>
     printString handle endTag 0
 
-printXmlSpecialData :: Maybe Handle -> [Either Data Object] -> Int -> String -> IO ()
+printXmlSpecialData :: Maybe Handle -> [Either Data Object] -> String -> Bool -> IO ()
 printXmlSpecialData _ [] _ _ = return ()
-printXmlSpecialData handle [x] _ symbol_ = case x of
-    Left data_ ->   if symbol_ == myFromJustString (symbol data_) then
-                        printString handle " " 0 >>
-                        printString handle symbol_ 0 >>
-                        printString handle "=\"" 0 >>
-                        printString handle (myFromJustString (dataContent data_)) 0 >>
-                        printString handle "\">\n" 0
-                    else return ()
+printXmlSpecialData handle [Left data_] symbol_ True =
+    printString handle " " 0 >>
+    printString handle symbol_ 0 >>
+    printString handle "=\"" 0 >>
+    printString handle (myFromJustString (dataContent data_)) 0 >>
+    printString handle "\">\n" 0
+printXmlSpecialData handle [Left data_] symbol_ False =
+    printString handle " " 0 >>
+    printString handle symbol_ 0 >>
+    printString handle "=\"" 0 >>
+    printString handle (myFromJustString (dataContent data_)) 0 >>
+    printString handle "\">" 0
+printXmlSpecialData handle (x:xs) symbol_ enter = case x of
+    Left _ -> printXmlSpecialData handle [x] symbol_ enter
     Right _ -> return ()
-printXmlSpecialData handle (x:xs) spaces symbol_ = case x of
-    Left _ -> printXmlSpecialData handle [x] spaces symbol_
-    Right _ -> return ()
-    >> printXmlSpecialData handle xs spaces symbol_
+    >> printXmlSpecialData handle xs symbol_ enter
 
 printXmlContent :: Maybe Handle -> [Either Data Object] -> Int -> IO ()
 printXmlContent _ [] _ = return ()
 printXmlContent handle [Left data_] spaces =
-    printXmlData handle data_ spaces False
+    printXmlData handle data_ spaces
 printXmlContent handle [Right obj] spaces = printXmlObject handle obj spaces
 printXmlContent handle (Left data_:xs) spaces =
-    printXmlData handle data_ spaces False >>
+    printXmlData handle data_ spaces >>
     printXmlContent handle xs spaces
 printXmlContent handle (Right obj:xs) spaces = printXmlObject handle obj spaces
     >> printXmlContent handle xs spaces
