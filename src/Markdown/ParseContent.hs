@@ -20,9 +20,27 @@ parseMdBody = do
     a <- concatList
     return (createObject ListT (Just "body") a)
 
+
+-- {
+--                         "section": {
+--                             "title": "header 2",
+--                             "content": [
+parseHeaderOne :: Parser (Either Data Object)
+parseHeaderOne = do
+    _ <- parseMany (parseAnyChar "\n \t")
+    _ <- parseString "# "
+    title <- parseUntilChar '\n'
+    content <- concatList
+    return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just title) TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") content))
+            ])
+        ]))
+
 concatList :: Parser [Either Data Object]
 concatList =
-    concat <$> parseMany ((:[]) <$> (parseCodeBlock <|> parseListBlock  <|> parseParagraph ))
+    concat <$> parseMany ((:[]) <$> (parseHeaderOne <|> parseCodeBlock <|> parseListBlock  <|> parseParagraph ))
 
 parseListBlock :: Parser (Either Data Object)
 parseListBlock = do
@@ -48,7 +66,7 @@ parseParagraph = do
 
 parseText :: Parser (Either Data Object)
 parseText = do
-    t <- parseSome (parseAnyCharNotMatch "\n`*[!-") -----MAJOR ISSUE TO FIX
+    t <- parseSome (parseAnyCharNotMatch "\n`*[!-#") -----MAJOR ISSUE TO FIX
     return (Left (createData (Just t) TextT Nothing))
 
 parseItalic :: Parser (Either Data Object)
@@ -72,7 +90,7 @@ parseCode = do
     return (Right (createObject SectionT Nothing [Left (createData (Just c)
         BoldT (Just "code"))]))
 
-parseCodeBlock :: Parser (Either Data Object)
+parseCodeBlock :: Parser (Either Data Object) -- 
 parseCodeBlock = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "```"
