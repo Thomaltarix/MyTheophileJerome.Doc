@@ -156,28 +156,30 @@ printXmlObjectStartSymbol handle
         needNoSpaces handle obj spaces
 printXmlObjectStartSymbol _ _ _ = return NormalSpaces
 
+displayEnd :: Maybe Handle -> Object -> Int -> IO ()
+displayEnd handle obj spaces =
+    let (_, endTag) = getXmlObjectTag obj in
+    printString handle endTag spaces
 
 printXmlObjectEndSymbol :: Maybe Handle -> Object -> Int -> IO ()
 printXmlObjectEndSymbol handle
-    obj@(Object {objType = SectionT, objSymbol = Just "section"}) spaces =
-    let (_, endTag) = getXmlObjectTag obj in
-    printString handle endTag spaces
+    obj@Object {objType = SectionT, objSymbol = Just "section"} spaces =
+        displayEnd handle obj spaces
 printXmlObjectEndSymbol handle
-    obj@(Object {objType = ListT, objSymbol = Just "list"}) spaces =
-    let (_, endTag) = getXmlObjectTag obj in
-    printString handle endTag spaces
+    obj@Object {objType = ListT, objSymbol = Just "list"} spaces =
+        displayEnd handle obj spaces
 printXmlObjectEndSymbol handle
-    obj@(Object {objType = CodeBlockT, objSymbol = Just "codeblock"}) spaces =
-    let (_, endTag) = getXmlObjectTag obj in
-    printString handle endTag spaces
+    obj@Object {objType = CodeBlockT, objSymbol = Just "codeblock"} spaces =
+        displayEnd handle obj spaces
 printXmlObjectEndSymbol handle
-    obj@(Object {objType = LinkT, objSymbol = Just "link"}) spaces =
-    let (_, endTag) = getXmlObjectTag obj in
-    printString handle endTag spaces
+    obj@Object {objType = LinkT, objSymbol = Just "link"} spaces =
+        displayEnd handle obj spaces
 printXmlObjectEndSymbol handle
-    obj@(Object {objType = ImageT, objSymbol = Just "image"}) spaces =
-    let (_, endTag) = getXmlObjectTag obj in
-    printString handle endTag spaces
+    obj@Object {objType = ImageT, objSymbol = Just "image"} spaces =
+        displayEnd handle obj spaces
+printXmlObjectEndSymbol handle
+    obj@Object {objType = ParagraphT} spaces =
+        displayEnd handle obj spaces
 printXmlObjectEndSymbol _ _ _ = return ()
 
 checkSubObject :: [Either Data Object] -> Bool
@@ -188,18 +190,17 @@ checkSubObject (Right _:_) = False
 isAData :: Either Data Object -> Bool
 isAData (Left (Data {dataType = TextT})) = True
 isAData (Right Object {objType = CodeBlockT}) = False
-isAData (Right obj@(Object {objType = SectionT}))
-    | containsImageOrLink (datas obj) = False
-    | otherwise = checkSubObject (datas obj)
+isAData (Right (Object {objType = SectionT})) = False
 isAData (Right (Object {objType = ListT})) = False
+isAData (Right (Object {objType = ImageT})) = False
+isAData (Right (Object {objType = LinkT})) = False
 isAData (Right obj) = checkSubObject (datas obj)
 isAData _ = False
 
 checkDatas :: [Either Data Object] -> Bool
 checkDatas [] = False
 checkDatas [x] = isAData x
-checkDatas (Right (Object {objType = SectionT}):xs) =
-    checkDatas xs
+checkDatas (Right (Object {objType = SectionT}):xs) = checkDatas xs
 checkDatas (x:xs) = isAData x && checkDatas xs
 
 checkObject :: Object -> Object
