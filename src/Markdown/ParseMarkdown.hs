@@ -13,9 +13,6 @@ import Markdown.ParseHeader(getHeader)
 import Markdown.ParseContent
 import DataStructure
 
-testmd :: IO ()
-testmd = readFile "tests/syntaxe.md" >>= print . markdownParsing
-
 markdownParsing :: String -> Maybe DataStruct
 markdownParsing str =
     case getHeader str defaultHeader of
