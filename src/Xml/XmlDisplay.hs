@@ -229,12 +229,9 @@ handleSpaces handle obj _ NoSpaces =
 
 printXmlObject :: Maybe Handle -> Object -> Int -> IO ()
 printXmlObject handle obj spaces = do
-    needSpaces <- printXmlObjectStartSymbol handle obj spaces
-    if needSpaces then
-        printXmlContent handle (datas obj) (spaces + 4) >>
-        printXmlObjectEndSymbol handle obj spaces
-    else printXmlContent handle (datas obj) spaces >>
-        printXmlObjectEndSymbol handle obj spaces
+    let newObj = checkObject obj
+    needSpaces <- printXmlObjectStartSymbol handle newObj spaces
+    handleSpaces handle newObj spaces needSpaces
 
 printXmlHeaderData :: Maybe Handle -> Maybe Data -> Int -> IO ()
 printXmlHeaderData _ Nothing _ = return ()
