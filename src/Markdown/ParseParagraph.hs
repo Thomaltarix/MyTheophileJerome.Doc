@@ -13,7 +13,9 @@ import DataStructure
 parseParagraph :: Parser (Either Data Object)
 parseParagraph = do
     _ <- parseMany (parseAnyChar "\n \t")
-    o <- concat <$> parseMany ((:[]) <$> (parseBold <|> parseItalic <|> parseImage <|> parseLink <|> parseCode <|> parseText   ))
+    o <- concat <$> parseMany ((:[]) <$> (parseBold <|> parseItalic
+        <|> parseImage <|> parseLink <|> parseCode
+        <|> parseText   ))
     _ <- parseString "\n"
     return (Right (createObject ListT Nothing o))
 
@@ -51,7 +53,8 @@ parseImage = do
     alt <- parseUntilChar ']'
     _ <- parseChar '('
     url <- parseUntilChar ')'
-    return $ Right $ createObject SectionT Nothing [Right (createObject ImageT (Just "image") [Left (createData (Just url) TextT (Just "url")), Right (createObject ListT (Just "alt") [Left (createData (Just alt) TextT Nothing)])])]
+    return $ Right $ createObject SectionT Nothing [Right (createObject
+        ImageT (Just "image") [Left (createData (Just url) TextT (Just "url")), Right (createObject ListT (Just "alt") [Left (createData (Just alt) TextT Nothing)])])]
 
 parseLink :: Parser (Either Data Object)
 parseLink = do
@@ -60,5 +63,8 @@ parseLink = do
     gcontent <- parseUntilChar ']'
     _ <- parseChar '('
     url <- parseUntilChar ')'
-    return $ Right $ createObject SectionT Nothing [Right (createObject LinkT (Just "link") [Left (createData (Just url) TextT (Just "url")), Right (createObject ListT (Just "content") [Left (createData (Just gcontent) TextT Nothing)])])]
+    return $ Right $ createObject SectionT Nothing [Right (createObject
+        LinkT (Just "link") [Left (createData (Just url) TextT (Just "url")),
+        Right (createObject ListT (Just "content") [Left (createData 
+        (Just gcontent) TextT Nothing)])])]
 
