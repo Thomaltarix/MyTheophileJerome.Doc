@@ -21,6 +21,7 @@ module ParsingLib (
     parseInt,
     parseString,
     checkIfChar,
+    failingParse,
     (<|>),
     parseStringQuote,
     parseStringBalise,
@@ -75,6 +76,11 @@ parseChar c = Parser p where
     p (x:xs)
         | x == c = Just (c, xs)
         | otherwise = Nothing
+    p _ = Nothing
+
+failingParse :: Parser Char
+failingParse = Parser p where
+    p (x:xs) = Nothing
     p _ = Nothing
 
 checkNotChar :: Char -> Parser Char

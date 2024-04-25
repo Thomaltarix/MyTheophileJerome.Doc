@@ -21,7 +21,8 @@ parseMdBody = do
     return (createObject ListT (Just "body") a)
 
 parseHeaderOne :: Int -> Parser (Either Data Object)
-parseHeaderOne _ = do
+parseHeaderOne num 
+    | num < 1 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "# "
     title <- parseUntilChar '\n'
@@ -32,9 +33,13 @@ parseHeaderOne _ = do
                 (Right (createObject ListT (Just "content") content))
             ])
         ]))
+    | otherwise = do
+        _ <- failingParse
+        return (Left (createData (Just "Error") TextT Nothing))
 
 parseHeaderTwo :: Int -> Parser (Either Data Object)
-parseHeaderTwo _ = do
+parseHeaderTwo num 
+    | num < 2 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "## "
     title <- parseUntilChar '\n'
@@ -45,9 +50,13 @@ parseHeaderTwo _ = do
                 (Right (createObject ListT (Just "content") content))
             ])
         ]))
+    | otherwise = do
+        _ <- failingParse
+        return (Left (createData (Just "Error") TextT Nothing))
 
 parseHeaderThree :: Int -> Parser (Either Data Object)
-parseHeaderThree _ = do
+parseHeaderThree num 
+    | num < 3 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "### "
     title <- parseUntilChar '\n'
@@ -58,9 +67,13 @@ parseHeaderThree _ = do
                 (Right (createObject ListT (Just "content") content))
             ])
         ]))
+    | otherwise = do
+        _ <- failingParse
+        return (Left (createData (Just "Error") TextT Nothing))
 
 parseHeaderFour :: Int -> Parser (Either Data Object)
-parseHeaderFour _ = do
+parseHeaderFour num 
+    | num < 4 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "#### "
     title <- parseUntilChar '\n'
@@ -71,9 +84,13 @@ parseHeaderFour _ = do
                 (Right (createObject ListT (Just "content") content))
             ])
         ]))
+    | otherwise = do
+        _ <- failingParse
+        return (Left (createData (Just "Error") TextT Nothing))
 
 parseHeaderFive :: Int -> Parser (Either Data Object)
-parseHeaderFive _ = do
+parseHeaderFive num 
+    | num < 5 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "##### "
     title <- parseUntilChar '\n'
@@ -84,9 +101,13 @@ parseHeaderFive _ = do
                 (Right (createObject ListT (Just "content") content))
             ])
         ]))
+    | otherwise = do
+        _ <- failingParse
+        return (Left (createData (Just "Error") TextT Nothing))
 
 parseHeaderSix :: Int -> Parser (Either Data Object)
-parseHeaderSix _ = do
+parseHeaderSix num 
+    | num < 6 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "###### "
     title <- parseUntilChar '\n'
@@ -97,6 +118,9 @@ parseHeaderSix _ = do
                 (Right (createObject ListT (Just "content") content))
             ])
         ]))
+    | otherwise = do
+        _ <- failingParse
+        return (Left (createData (Just "Error") TextT Nothing))
 
 concatList :: Int -> Parser [Either Data Object]
 concatList level =
