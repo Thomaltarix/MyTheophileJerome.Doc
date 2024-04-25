@@ -48,13 +48,14 @@ parseCode = do
 parseImage :: Parser (Either Data Object)
 parseImage = do
     _ <- parseMany (parseAnyChar " \n\t")
-    _ <- parseChar '!'
-    _ <- parseChar '['
+    _ <- parseString "!["
     alt <- parseUntilChar ']'
     _ <- parseChar '('
     url <- parseUntilChar ')'
     return $ Right $ createObject SectionT Nothing [Right (createObject
-        ImageT (Just "image") [Left (createData (Just url) TextT (Just "url")), Right (createObject ListT (Just "alt") [Left (createData (Just alt) TextT Nothing)])])]
+        ImageT (Just "image") [Left (createData (Just url) TextT (Just "url"))
+        , Right (createObject ListT (Just "alt") [Left (createData (Just alt)
+        TextT Nothing)])])]
 
 parseLink :: Parser (Either Data Object)
 parseLink = do

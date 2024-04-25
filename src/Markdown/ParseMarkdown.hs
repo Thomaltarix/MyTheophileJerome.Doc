@@ -26,15 +26,3 @@ markdownParsing str =
                 }
             (Nothing, _) -> Nothing
         (Nothing, _) -> Nothing
-
-
--- markdownParsing str =
---     case getHeader str defaultHeader of
---         (Just h, str') -> --case getContent str' of
---             --(Just c, _) -> 
---                 Just DataStruct {
---                 header = h,
---                 content = createObject ListT (Nothing) []
---                 }
---             --(Nothing, _) -> Nothing
---         (Nothing, _) -> Nothing

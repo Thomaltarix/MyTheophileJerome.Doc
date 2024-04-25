@@ -34,12 +34,9 @@ markdownHeaderParsing :: Parser ((MarkdownValue, String), (MarkdownValue, String
 markdownHeaderParsing = do
     _ <- parseString "---"
     _ <- parseMany (parseAnyChar "\n \t")
-    a <- markdownTitleParse <|> markdownAuthorParse
-        <|> markdownDateParse <|> markdownVoidParse
-    b <- markdownTitleParse <|> markdownAuthorParse
-        <|> markdownDateParse <|> markdownVoidParse
-    c <- markdownTitleParse <|> markdownAuthorParse
-        <|> markdownDateParse <|> markdownVoidParse
+    a <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse
+    b <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse
+    c <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse
     _ <- parseString "---\n"
     return (a, b, c)
 
@@ -63,9 +60,6 @@ markdownDateParse = do
     a <- parseUntilChar '\n'
     _ <- parseMany (parseAnyChar "\n \t")
     return (MarkdownDate, a)
-
-markdownVoidParse :: Parser (MarkdownValue, String)
-markdownVoidParse = return (MarkdownVoid, "")
 
 processMarkdownTitle :: String -> Header -> Header
 processMarkdownTitle str h =
