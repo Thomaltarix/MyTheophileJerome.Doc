@@ -54,7 +54,8 @@ getJsonContent [Left data_] spaces = printJsonData data_ True spaces
 getJsonContent [Right obj] spaces = getJsonObject obj True spaces
 getJsonContent (Left data_:xs) spaces = printJsonData data_ False spaces
     ++ getJsonContent xs spaces
-getJsonContent (Right obj:xs) spaces = printJsonObject obj False spget    ++ getJsonContent xs spaces
+getJsonContent (Right obj:xs) spaces = getJsonObject obj False spaces
+    ++ getJsonContent xs spaces
 
 getJsonObject :: Object -> Bool -> Int -> String
 getJsonObject obj end spaces =
@@ -79,7 +80,7 @@ getJsonHeader
     getJsonHeaderData title_ False (spaces + 4) ++
     getJsonHeaderData author_ False (spaces + 4) ++
     getJsonHeaderData date_ True (spaces + 4) ++
-    endTag ++
+    getString endTag spaces ++
     getEnd end
 
 printJson :: Maybe Handle -> DataStruct -> IO ()
