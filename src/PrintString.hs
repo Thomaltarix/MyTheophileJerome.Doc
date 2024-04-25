@@ -8,7 +8,6 @@
 module PrintString (
     printString,
     myFromJustString,
-    -- printEnd,
     getString,
     getEnd
     ) where
