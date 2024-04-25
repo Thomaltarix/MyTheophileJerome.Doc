@@ -23,5 +23,3 @@ parseMdBody :: Parser Object
 parseMdBody = do
     a <- concatList 0
     return (createObject ListT (Just "body") a)
-
-

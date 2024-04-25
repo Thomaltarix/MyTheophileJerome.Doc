@@ -34,9 +34,12 @@ markdownHeaderParsing :: Parser ((MarkdownValue, String), (MarkdownValue, String
 markdownHeaderParsing = do
     _ <- parseString "---"
     _ <- parseMany (parseAnyChar "\n \t")
-    a <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
-    b <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
-    c <- markdownTitleParse <|> markdownAuthorParse <|> markdownDateParse <|> markdownVoidParse
+    a <- markdownTitleParse <|> markdownAuthorParse
+        <|> markdownDateParse <|> markdownVoidParse
+    b <- markdownTitleParse <|> markdownAuthorParse
+        <|> markdownDateParse <|> markdownVoidParse
+    c <- markdownTitleParse <|> markdownAuthorParse
+        <|> markdownDateParse <|> markdownVoidParse
     _ <- parseString "---\n"
     return (a, b, c)
 
@@ -77,7 +80,10 @@ processMarkdownDate str h =
     h {date = Just (createData (Just str) TextT (Just "date"))}
 
 processMarkdown :: (MarkdownValue, String) -> Header -> Header
-processMarkdown (MarkdownTitle, markdownData)  h = processMarkdownTitle markdownData h
-processMarkdown (MarkdownAuthor, markdownData) h = processMarkdownAuthor markdownData h
-processMarkdown (MarkdownDate, markdownData) h = processMarkdownDate markdownData h
+processMarkdown (MarkdownTitle, markdownData)  h
+    = processMarkdownTitle markdownData h
+processMarkdown (MarkdownAuthor, markdownData) h
+    = processMarkdownAuthor markdownData h
+processMarkdown (MarkdownDate, markdownData) h
+    = processMarkdownDate markdownData h
 processMarkdown _ h = h

@@ -16,7 +16,11 @@ import Markdown.ParseBlocks
 
 concatList :: Int -> Parser [Either Data Object]
 concatList level =
-    concat <$> parseMany ((:[]) <$> (parseHeaderSix level <|> parseHeaderFive level <|> parseHeaderFour level <|> parseHeaderThree level <|> parseHeaderTwo level <|> parseHeaderOne level <|> parseCodeBlock <|> parseListBlock  <|> parseParagraph ))
+    concat <$> parseMany ((:[]) <$> (parseHeaderSix level
+    <|> parseHeaderFive level <|> parseHeaderFour level 
+    <|> parseHeaderThree level <|> parseHeaderTwo level 
+    <|> parseHeaderOne level <|> parseCodeBlock 
+    <|> parseListBlock  <|> parseParagraph ))
 
 parseHeaderOne :: Int -> Parser (Either Data Object)
 parseHeaderOne num 
