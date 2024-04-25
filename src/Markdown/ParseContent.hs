@@ -216,17 +216,6 @@ parseCode = do
     return (Right (createObject SectionT Nothing [Left (createData (Just c)
         BoldT (Just "code"))]))
 
-parseCodeBlock :: Parser (Either Data Object) -- 
-parseCodeBlock = do
-    _ <- parseMany (parseAnyChar " \n\t")
-    _ <- parseString "```"
-    _ <- parseMany (parseAnyChar " \t")
-    c <- parseUntilString "``"
-    _ <- parseChar '`'
-    _ <- parseMany (parseAnyChar " \t")
-    return (Right (createObject SectionT Nothing [Left (createData (Just c)
-        CodeT (Just "codeblock"))]))
-
 parseImage :: Parser (Either Data Object)
 parseImage = do
     _ <- parseMany (parseAnyChar " \n\t")
@@ -245,3 +234,37 @@ parseLink = do
     _ <- parseChar '('
     url <- parseUntilChar ')'
     return $ Right $ createObject SectionT Nothing [Right (createObject LinkT (Just "link") [Left (createData (Just url) TextT (Just "url")), Right (createObject ListT (Just "content") [Left (createData (Just gcontent) TextT Nothing)])])]
+
+
+parseCodeBlock :: Parser (Either Data Object) -- 
+parseCodeBlock = do
+    _ <- parseMany (parseAnyChar " \n\t")
+    _ <- parseString "```"
+    _ <- parseMany (parseAnyChar " \n\t")
+    a <- concat <$> parseMany ((:[]) <$> (parseCodeblockItem))
+    _ <- parseString "```"
+    _ <- parseMany (parseAnyChar " \n\t")
+    return (Right (createObject SectionT Nothing [Right (createObject CodeBlockT (Just "codeblock") a)]))
+
+parseCodeblockItem :: Parser (Either Data Object)
+parseCodeblockItem = do
+    _ <- parseMany (parseAnyChar " \n\t")
+    c <- parseSome (parseAnyCharNotMatch "`\n")
+    _ <- parseMany (parseAnyChar " \n\t")
+    _ <- parseMany (parseAnyChar " \n\t")
+    return (Left (createData (Just c) TextT Nothing))
+
+-- parseListBlock :: Parser (Either Data Object)
+-- parseListBlock = do
+--     _ <- parseMany (parseAnyChar "\n \t")
+--     _ <- checkIfChar '-'
+--     o <- concat <$> parseMany ((:[]) <$> (parseListItem))
+--     return (Right (createObject SectionT Nothing [Right (createObject ListT (Just "list") o)]))
+
+-- parseListItem :: Parser (Either Data Object)
+-- parseListItem = do
+--     _ <- parseString "- "
+--     _ <- parseMany (parseAnyChar " \t")
+--     c <- parseParagraph
+--     _ <- parseMany (parseAnyChar " \t")
+--     return (c)
