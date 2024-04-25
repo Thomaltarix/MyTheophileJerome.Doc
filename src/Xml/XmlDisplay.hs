@@ -179,14 +179,6 @@ printXmlObjectEndSymbol handle
     let (_, endTag) = getXmlObjectTag obj in
     printString handle endTag spaces
 printXmlObjectEndSymbol _ _ _ = return ()
-containsImageOrLink :: [Either Data Object] -> Bool
-containsImageOrLink [] = False
-containsImageOrLink (Left _:xs) =
-    containsImageOrLink xs
-containsImageOrLink (Right (Object {objType = ImageT}):_) = True
-containsImageOrLink (Right (Object {objType = LinkT}):_) = True
-containsImageOrLink (Right obj:xs) =
-    containsImageOrLink (datas obj) || containsImageOrLink xs
 
 checkSubObject :: [Either Data Object] -> Bool
 checkSubObject [] = True
