@@ -4,13 +4,11 @@
 -- File description:
 -- ParseContent
 -}
-
 module Markdown.ParseContent where
 
 import ParsingLib
 
 import DataStructure
-
 
 getContent :: String -> (Maybe Object, String)
 getContent str = case runParser parseMdBody str of
@@ -24,7 +22,7 @@ parseMdBody = do
 
 concatList :: Parser [Either Data Object]
 concatList =
-    concat <$> parseMany ((:[]) <$> (parseListBlock <|> parseCodeBlock <|> parseParagraph ))
+    concat <$> parseMany ((:[]) <$> (parseCodeBlock <|> parseListBlock  <|> parseParagraph ))
 
 parseListBlock :: Parser (Either Data Object)
 parseListBlock = do
@@ -40,8 +38,6 @@ parseListItem = do
     c <- parseParagraph
     _ <- parseMany (parseAnyChar " \t")
     return (c)
-
-
 
 parseParagraph :: Parser (Either Data Object)
 parseParagraph = do
@@ -78,13 +74,14 @@ parseCode = do
 
 parseCodeBlock :: Parser (Either Data Object)
 parseCodeBlock = do
+    _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "```"
     _ <- parseMany (parseAnyChar " \t")
     c <- parseUntilString "``"
     _ <- parseChar '`'
     _ <- parseMany (parseAnyChar " \t")
     return (Right (createObject SectionT Nothing [Left (createData (Just c)
-        CodeT (Just "code"))]))
+        CodeT (Just "codeblock"))]))
 
 parseImage :: Parser (Either Data Object)
 parseImage = do
