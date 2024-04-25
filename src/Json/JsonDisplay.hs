@@ -32,64 +32,60 @@ getJsonDataTag data_ = case dataType data_ of
     BoldT -> ("\"", "\"")
     CodeT -> ("\"", "\"")
 
-printJsonSymbol :: Maybe Handle -> String -> Int -> IO ()
-printJsonSymbol handle "" spaces = printString handle "" spaces
-printJsonSymbol handle symbol_ spaces =
-    printString handle "\"" spaces >>
-    printString handle symbol_ 0 >>
-    printString handle "\": " 0
+getJsonSymbol ::String -> Int -> String
+getJsonSymbol "" spaces = getString "" spaces
+getJsonSymbol symbol_ spaces =
+    getString "\"" spaces ++
+    getString symbol_ 0 ++
+    getString "\": " 0
 
-printJsonData :: Maybe Handle -> Data -> Bool -> Int -> IO ()
-printJsonData handle data_ end spaces =
+printJsonData :: Data -> Bool -> Int -> String
+printJsonData data_ end spaces =
     let (startTag, endTag) = getJsonDataTag data_ in
-    printJsonSymbol handle (myFromJustString (symbol data_)) spaces >>
-    printString handle startTag 0 >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printString handle endTag 0 >>
-    printEnd handle end
+    getJsonSymbol (myFromJustString (symbol data_)) spaces ++
+    getString startTag 0 ++
+    getString (myFromJustString (dataContent data_)) 0 ++
+    getString endTag 0 ++
+    getEnd end
 
-printJsonContent :: Maybe Handle -> [Either Data Object] -> Int -> IO ()
-printJsonContent _ [] _ = return ()
-printJsonContent handle [x] spaces = case x of
-    Left data_ -> printJsonData handle data_ True spaces
-    Right obj -> printJsonObject handle obj True spaces
-    >> printJsonContent handle [] spaces
-printJsonContent handle (x:xs) spaces = case x of
-    Left data_ -> printJsonData handle data_ False spaces
-    Right obj -> printJsonObject handle obj False spaces
-    >> printJsonContent handle xs spaces
+getJsonContent :: [Either Data Object] -> Int -> String
+getJsonContent [] _ = ""
+getJsonContent [Left data_] spaces = printJsonData data_ True spaces
+getJsonContent [Right obj] spaces = getJsonObject obj True spaces
+getJsonContent (Left data_:xs) spaces = printJsonData data_ False spaces
+    ++ getJsonContent xs spaces
+getJsonContent (Right obj:xs) spaces = getJsonObject obj False spaces
+    ++ getJsonContent xs spaces
 
-printJsonObject :: Maybe Handle -> Object -> Bool -> Int -> IO ()
-printJsonObject handle obj end spaces =
+getJsonObject :: Object -> Bool -> Int -> String
+getJsonObject obj end spaces =
     let (startTag, endTag) = getJsonObjectTag obj in
-    printJsonSymbol handle (myFromJustString (objSymbol obj)) spaces >>
-    printString handle startTag 0 >>
-    printJsonContent handle (datas obj) (spaces + 4) >>
-    printString handle endTag spaces >>
-    printEnd handle end
+    getJsonSymbol (myFromJustString (objSymbol obj)) spaces ++
+    getString startTag 0 ++
+    getJsonContent (datas obj) (spaces + 4) ++
+    getString endTag spaces ++
+    getEnd end
 
-printJsonHeaderData :: Maybe Handle -> Maybe Data -> Bool -> Int -> IO ()
-printJsonHeaderData _ Nothing _ _ = return ()
-printJsonHeaderData handle (Just data_) end spaces =
-    printJsonData handle data_ end spaces
+getJsonHeaderData :: Maybe Data -> Bool -> Int -> String
+getJsonHeaderData Nothing _ _ = ""
+getJsonHeaderData (Just data_) end spaces =
+    printJsonData data_ end spaces
 
-printJsonHeader :: Maybe Handle -> Header -> Bool -> Int -> IO ()
-printJsonHeader handle
+getJsonHeader :: Header -> Bool -> Int -> String
+getJsonHeader
     Header {title = title_, author = author_, date = date_} end spaces =
     let (startTag, endTag) = getJsonObjectTag (Object SectionT Nothing []) in
-    printString handle "\"header\": " spaces >>
-    printString handle startTag 0 >>
-    printJsonHeaderData handle title_ False (spaces + 4) >>
-    printJsonHeaderData handle author_ False (spaces + 4) >>
-    printJsonHeaderData handle date_ True (spaces + 4) >>
-    printString handle endTag spaces >>
-    printEnd handle end
+    getString "\"header\": " spaces ++
+    getString startTag 0 ++
+    getJsonHeaderData title_ False (spaces + 4) ++
+    getJsonHeaderData author_ False (spaces + 4) ++
+    getJsonHeaderData date_ True (spaces + 4) ++
+    getString endTag spaces ++
+    getEnd end
 
 printJson :: Maybe Handle -> DataStruct -> IO ()
 printJson handle dataStruct =
     let (startTag, endTag) = getJsonObjectTag (Object SectionT Nothing []) in
-    printString handle startTag 0 >>
-    printJsonHeader handle (header dataStruct) False 4 >>
-    printJsonObject handle (content dataStruct) True 4 >>
-    printString handle endTag 0 >>
-    printString handle "\n" 0
+    let json = startTag ++ getJsonHeader (header dataStruct) False 4
+            ++ getJsonObject (content dataStruct) True 4 ++ endTag ++ "\n" in
+        printString handle json

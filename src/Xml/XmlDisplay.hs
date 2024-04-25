@@ -41,146 +41,128 @@ getXmlDataTag data_ = case dataType data_ of
     BoldT -> ("<bold>", "</bold>")
     CodeT -> ("<code>", "</code>")
 
-printXmlStartSymbol :: Maybe Handle -> String -> Int -> IO ()
-printXmlStartSymbol handle "" spaces = printString handle "" spaces
-printXmlStartSymbol handle symbol_ spaces =
-    printString handle "<" spaces >>
-    printString handle symbol_ 0 >>
-    printString handle ">" 0
+getXmlStartSymbol :: String -> Int -> String
+getXmlStartSymbol "" spaces = getString "" spaces
+getXmlStartSymbol symbol_ spaces =
+    getString "<" spaces ++
+    getString symbol_ 0 ++
+    getString ">" 0
 
-printXmlEndSymbol :: Maybe Handle -> String -> Int -> IO ()
-printXmlEndSymbol handle "" spaces = printString handle "\n" spaces
-printXmlEndSymbol handle symbol_ _ =
-    printString handle "</" 0 >>
-    printString handle symbol_ 0 >>
-    printString handle ">\n" 0
+getXmlEndSymbol :: String -> Int -> String
+getXmlEndSymbol "" spaces = getString "\n" spaces
+getXmlEndSymbol symbol_ _ =
+    getString "</" 0 ++
+    getString symbol_ 0 ++
+    getString ">\n" 0
 
-printXmlData :: Maybe Handle -> Data -> Int -> IO ()
-printXmlData _ Data {symbol = Just "title"} _ = return ()
-printXmlData _ Data {symbol = Just "url"} _ = return ()
-printXmlData handle data_@(Data {dataType = ItalicT}) _ =
+getXmlData :: Data -> Int -> String
+getXmlData Data {symbol = Just "title"} _ = ""
+getXmlData Data {symbol = Just "url"} _ = ""
+getXmlData data_@(Data {dataType = TextT}) spaces =
     let (startTag, endTag) = getXmlDataTag data_ in
-    printString handle startTag 0 >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printString handle endTag 0
-printXmlData handle data_@(Data {dataType = BoldT}) _ =
+    getString startTag spaces ++
+    getString (myFromJustString (dataContent data_)) 0 ++
+    getString endTag 0
+getXmlData data_ _ =
     let (startTag, endTag) = getXmlDataTag data_ in
-    printString handle startTag 0 >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printString handle endTag 0
-printXmlData handle data_@(Data {dataType = CodeT}) _ =
-    let (startTag, endTag) = getXmlDataTag data_ in
-    printString handle startTag 0 >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printString handle endTag 0
-printXmlData handle data_@(Data {dataType = TextT}) spaces =
-    let (startTag, endTag) = getXmlDataTag data_ in
-    printString handle startTag spaces >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printString handle endTag 0
+    getString startTag 0 ++
+    getString (myFromJustString (dataContent data_)) 0 ++
+    getString endTag 0
 
-printXmlSpecialData :: Maybe Handle -> [Either Data Object] -> String -> Bool -> IO ()
-printXmlSpecialData _ [] _ _ = return ()
-printXmlSpecialData handle [Left data_] symbol_ True =
-    printString handle " " 0 >>
-    printString handle symbol_ 0 >>
-    printString handle "=\"" 0 >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printString handle "\">\n" 0
-printXmlSpecialData handle [Left data_] symbol_ False =
-    printString handle " " 0 >>
-    printString handle symbol_ 0 >>
-    printString handle "=\"" 0 >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printString handle "\">" 0
-printXmlSpecialData handle (x:xs) symbol_ enter = case x of
-    Left _ -> printXmlSpecialData handle [x] symbol_ enter
-    Right _ -> return ()
-    >> printXmlSpecialData handle xs symbol_ enter
+getEndOfSection :: Bool -> String
+getEndOfSection False = "\n"
+getEndOfSection True = ""
 
-printXmlContent :: Maybe Handle -> [Either Data Object] -> Int -> IO ()
-printXmlContent _ [] _ = return ()
-printXmlContent handle [Left data_] spaces =
-    printXmlData handle data_ spaces
-printXmlContent handle [Right obj] spaces = printXmlObject handle obj spaces
-printXmlContent handle (Left data_:xs) spaces =
-    printXmlData handle data_ spaces >>
-    printXmlContent handle xs spaces
-printXmlContent handle (Right obj:xs) spaces = printXmlObject handle obj spaces
-    >> printXmlContent handle xs spaces
+getXmlSpecialData :: [Either Data Object] -> String -> Bool -> String
+getXmlSpecialData [Left data_] symbol_ end =
+    getString " " 0 ++
+    getString symbol_ 0 ++
+    getString "=\"" 0 ++
+    getString (myFromJustString (dataContent data_)) 0 ++
+    getString "\">" 0 ++
+    getEndOfSection end
+getXmlSpecialData (Left data_:xs) symbol_ end =
+    getXmlSpecialData [Left data_] symbol_ end ++
+    getXmlSpecialData xs symbol_ end
+getXmlSpecialData _ _ _ = ""
 
-needUrl :: Maybe Handle -> Object -> Int -> IO XmlIndentation
-needUrl handle obj spaces =
+getXmlContent :: [Either Data Object] -> Int -> String
+getXmlContent [] _ = ""
+getXmlContent [Left data_] spaces = getXmlData data_ spaces
+getXmlContent [Right obj] spaces = getXmlObject obj spaces
+getXmlContent (Left data_:xs) spaces =
+    getXmlData data_ spaces ++
+    getXmlContent xs spaces
+getXmlContent (Right obj:xs) spaces = getXmlObject obj spaces
+    ++ getXmlContent xs spaces
+
+needUrl :: Object -> Int -> (String, XmlIndentation)
+needUrl obj spaces =
     let (startTag, _) = getXmlObjectTag obj in
-    printString handle startTag spaces >>
-    printXmlSpecialData handle (datas obj) "url" False >>
-    return NoSpaces
+    (getString startTag spaces
+    ++ getXmlSpecialData (datas obj) "url" True, NoSpaces)
 
-needTitle :: Maybe Handle -> Object -> Int -> IO XmlIndentation
-needTitle handle obj spaces =
+needTitle :: Object -> Int -> (String, XmlIndentation)
+needTitle obj spaces =
     let (startTag, _) = getXmlObjectTag obj in
-    printString handle startTag spaces >>
-    printXmlSpecialData handle (datas obj) "title" True >>
-    return FourSpaces
+    (getString startTag spaces
+    ++ getXmlSpecialData (datas obj) "title" False, FourSpaces)
 
-needNothing :: Maybe Handle -> Object -> Int -> IO XmlIndentation
-needNothing handle obj spaces =
+needNothing :: Object -> Int -> (String, XmlIndentation)
+needNothing obj spaces =
     let (startTag, _) = getXmlObjectTag obj in
-    printString handle startTag spaces >>
-    return FourSpaces
+    (getString startTag spaces, FourSpaces)
 
-needNoSpaces :: Maybe Handle -> Object -> Int -> IO XmlIndentation
-needNoSpaces handle obj spaces =
+needNoSpaces :: Object -> Int -> (String, XmlIndentation)
+needNoSpaces obj spaces =
     let (startTag, _) = getXmlObjectTag obj in
-    printString handle startTag spaces >>
-    return NoSpaces
+    (getString startTag spaces, NoSpaces)
 
-printXmlObjectStartSymbol :: Maybe Handle -> Object -> Int -> IO XmlIndentation
-printXmlObjectStartSymbol handle
+getXmlObjectStartSymbol :: Object -> Int -> (String, XmlIndentation)
+getXmlObjectStartSymbol
     obj@Object {objType = SectionT, objSymbol = Just "section"} spaces =
-        needTitle handle obj spaces
-printXmlObjectStartSymbol handle
+    needTitle obj spaces
+getXmlObjectStartSymbol
     obj@Object {objType = ListT, objSymbol = Just "list"} spaces =
-        needNothing handle obj spaces
-printXmlObjectStartSymbol handle
+    needNothing obj spaces
+getXmlObjectStartSymbol
     obj@Object {objType = CodeBlockT, objSymbol = Just "codeblock"} spaces =
-        needNothing handle obj spaces
-printXmlObjectStartSymbol handle
+    needNothing obj spaces
+getXmlObjectStartSymbol
     obj@Object {objType = LinkT, objSymbol = Just "link"} spaces =
-        needUrl handle obj spaces
-printXmlObjectStartSymbol handle
+    needUrl obj spaces
+getXmlObjectStartSymbol
     obj@Object {objType = ImageT, objSymbol = Just "image"} spaces =
-        needUrl handle obj spaces
-printXmlObjectStartSymbol handle
-    obj@Object {objType = ParagraphT} spaces =
-        needNoSpaces handle obj spaces
-printXmlObjectStartSymbol _ _ _ = return NormalSpaces
+    needUrl obj spaces
+getXmlObjectStartSymbol obj@Object {objType = ParagraphT} spaces =
+    needNoSpaces obj spaces
+getXmlObjectStartSymbol _ _ = ("", NormalSpaces)
 
-displayEnd :: Maybe Handle -> Object -> Int -> IO ()
-displayEnd handle obj spaces =
+displayEnd :: Object -> Int -> String
+displayEnd obj spaces =
     let (_, endTag) = getXmlObjectTag obj in
-    printString handle endTag spaces
+    getString endTag spaces
 
-printXmlObjectEndSymbol :: Maybe Handle -> Object -> Int -> IO ()
-printXmlObjectEndSymbol handle
+getXmlObjectEndSymbol :: Object -> Int -> String
+getXmlObjectEndSymbol
     obj@Object {objType = SectionT, objSymbol = Just "section"} spaces =
-        displayEnd handle obj spaces
-printXmlObjectEndSymbol handle
+    displayEnd obj spaces
+getXmlObjectEndSymbol
     obj@Object {objType = ListT, objSymbol = Just "list"} spaces =
-        displayEnd handle obj spaces
-printXmlObjectEndSymbol handle
+    displayEnd obj spaces
+getXmlObjectEndSymbol
     obj@Object {objType = CodeBlockT, objSymbol = Just "codeblock"} spaces =
-        displayEnd handle obj spaces
-printXmlObjectEndSymbol handle
+    displayEnd obj spaces
+getXmlObjectEndSymbol
     obj@Object {objType = LinkT, objSymbol = Just "link"} spaces =
-        displayEnd handle obj spaces
-printXmlObjectEndSymbol handle
+    displayEnd obj spaces
+getXmlObjectEndSymbol
     obj@Object {objType = ImageT, objSymbol = Just "image"} spaces =
-        displayEnd handle obj spaces
-printXmlObjectEndSymbol handle
+    displayEnd obj spaces
+getXmlObjectEndSymbol
     obj@Object {objType = ParagraphT} spaces =
-        displayEnd handle obj spaces
-printXmlObjectEndSymbol _ _ _ = return ()
+    displayEnd obj spaces
+getXmlObjectEndSymbol _ _ = ""
 
 checkSubObject :: [Either Data Object] -> Bool
 checkSubObject [] = True
@@ -209,59 +191,54 @@ checkObject obj@(Object {objType = ListT})
     | otherwise = obj
 checkObject obj = obj
 
-handleSpaces :: Maybe Handle -> Object -> Int -> XmlIndentation -> IO ()
-handleSpaces handle obj spaces NormalSpaces =
-    printXmlContent handle (datas obj) spaces >>
-    printXmlObjectEndSymbol handle obj spaces
-handleSpaces handle obj spaces FourSpaces =
-    printXmlContent handle (datas obj) (spaces + 4) >>
-    printXmlObjectEndSymbol handle obj spaces
-handleSpaces handle obj _ NoSpaces =
-    printXmlContent handle (datas obj) 0 >>
-    printXmlObjectEndSymbol handle obj 0
+handleSpaces :: Object -> Int -> XmlIndentation -> String
+handleSpaces obj spaces NormalSpaces = getXmlContent (datas obj) spaces
+    ++ getXmlObjectEndSymbol obj spaces
+handleSpaces obj spaces FourSpaces = getXmlContent (datas obj) (spaces + 4)
+    ++ getXmlObjectEndSymbol obj spaces
+handleSpaces obj _ NoSpaces = getXmlContent (datas obj) 0
+    ++ getXmlObjectEndSymbol obj 0
 
-printXmlObject :: Maybe Handle -> Object -> Int -> IO ()
-printXmlObject handle
-    obj@(Object {objType = ListT, objSymbol = Just "content"}) spaces = do
-    needSpaces <- printXmlObjectStartSymbol handle obj spaces
-    handleSpaces handle obj spaces needSpaces
-printXmlObject handle obj spaces = do
-    let newObj = checkObject obj
-    needSpaces <- printXmlObjectStartSymbol handle newObj spaces
-    handleSpaces handle newObj spaces needSpaces
+getXmlObject :: Object -> Int -> String
+getXmlObject
+    obj@(Object {objType = ListT, objSymbol = Just "content"}) spaces =
+    let (str, indent) = getXmlObjectStartSymbol obj spaces in
+    str ++ handleSpaces obj spaces indent
+getXmlObject obj spaces =
+    let newObj = checkObject obj in
+    let (str, indent) = getXmlObjectStartSymbol newObj spaces in
+    str ++ handleSpaces newObj spaces indent
 
-printXmlHeaderData :: Maybe Handle -> Maybe Data -> Int -> IO ()
-printXmlHeaderData _ Nothing _ = return ()
-printXmlHeaderData handle (Just data_@(Data {symbol = Just "title"})) _ =
-    printString handle (myFromJustString (dataContent data_)) 0
-printXmlHeaderData handle (Just data_) spaces =
-    printXmlStartSymbol handle (myFromJustString (symbol data_)) spaces >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printXmlEndSymbol handle (myFromJustString (symbol data_)) 0
+getXmlHeaderData :: Maybe Data -> Int -> String
+getXmlHeaderData Nothing _ = ""
+getXmlHeaderData (Just data_@(Data {symbol = Just "title"})) _ =
+    getString (myFromJustString (dataContent data_)) 0
+getXmlHeaderData (Just data_) spaces =
+    getXmlStartSymbol (myFromJustString (symbol data_)) spaces
+    ++ getString (myFromJustString (dataContent data_)) 0
+    ++ getXmlEndSymbol (myFromJustString (symbol data_)) 0
 
-printXmlHeader :: Maybe Handle -> Header -> Int -> IO ()
-printXmlHeader handle header_ spaces =
+getXmlHeader :: Header -> Int -> String
+getXmlHeader header_ spaces =
     let (startTag, endTag) = getXmlTag HeaderT in
-    printString handle startTag spaces >>
-    printString handle " title=\"" 0 >>
-    printXmlHeaderData handle (title header_) 0 >>
-    printString handle "\">\n" 0 >>
-    printXmlHeaderData handle (author header_) (spaces + 4) >>
-    printXmlHeaderData handle (date header_) (spaces + 4) >>
-    printString handle endTag spaces
+    getString startTag spaces
+    ++ getString " title=\"" 0
+    ++ getXmlHeaderData (title header_) 0
+    ++ getString "\">\n" 0
+    ++ getXmlHeaderData (author header_) (spaces + 4)
+    ++ getXmlHeaderData (date header_) (spaces + 4)
+    ++ getString endTag spaces
 
-printXmlBody :: Maybe Handle -> Object -> Int -> IO ()
-printXmlBody handle obj spaces =
+getXmlBody :: Object -> Int -> String
+getXmlBody obj spaces =
     let (startTag, endTag) = getXmlTag BodyT in
-    printString handle startTag spaces >>
-    printXmlContent handle (datas obj) (spaces + 4) >>
-    printString handle endTag spaces
+    getString startTag spaces
+    ++ getXmlContent (datas obj) (spaces + 4)
+    ++ getString endTag spaces
 
 printXml :: Maybe Handle -> DataStruct -> IO ()
 printXml handle dataStruct =
     let (startTag, endTag) = getXmlTag DocumentT in
-    printString handle startTag 0 >>
-    printXmlHeader handle (header dataStruct) 4 >>
-    printXmlBody handle (content dataStruct) 4 >>
-    printString handle endTag 0 >>
-    printString handle "\n" 0
+    let xml = startTag ++ getXmlHeader (header dataStruct) 4
+            ++ getXmlBody (content dataStruct) 4 ++ endTag ++ "\n" in
+        printString handle xml
