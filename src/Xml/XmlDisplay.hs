@@ -221,6 +221,10 @@ handleSpaces handle obj _ NoSpaces =
     printXmlObjectEndSymbol handle obj 0
 
 printXmlObject :: Maybe Handle -> Object -> Int -> IO ()
+printXmlObject handle
+    obj@(Object {objType = ListT, objSymbol = Just "content"}) spaces = do
+    needSpaces <- printXmlObjectStartSymbol handle obj spaces
+    handleSpaces handle obj spaces needSpaces
 printXmlObject handle obj spaces = do
     let newObj = checkObject obj
     needSpaces <- printXmlObjectStartSymbol handle newObj spaces
