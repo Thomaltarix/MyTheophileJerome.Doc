@@ -1,0 +1,181 @@
+DataStruct {
+header = Header {
+    title = Just (Data {dataContent = Just "Syntaxe XML", dataType = TextT, symbol = Just "title"}),
+    author = Just (Data {dataContent = Just "Fornes Leo", dataType = TextT, symbol = Just "author"}),
+    date = Just (Data {dataContent = Just "2024-01-01", dataType = TextT, symbol = Just "date"})},
+
+content = Object {objType = List, objSymbol = Just "body",
+datas = [
+    Right (Object {objType = List, objSymbol = Nothing, datas = [
+        Left (Data {dataContent = Just "This document is a simple example of the XML syntax.", dataType = TextT, symbol = Nothing})]}),
+
+    Right (Object {objType = List, objSymbol = Nothing, datas = [
+        Left (Data {dataContent = Just "Every syntax element is displayed in this document.", dataType = TextT, symbol = Nothing})]}),
+
+    Right (Object {objType = Section, objSymbol = Nothing,
+    datas = [
+        Right (Object {objType = Section, objSymbol = Just "section",
+        datas = [
+            Left (Data {dataContent = Just "header 1", dataType = TextT, symbol = Just "title"}),
+
+            Right (Object {objType = List, objSymbol = Just "content",
+            datas = [
+                Right (Object {objType = List, objSymbol = Nothing,
+                datas = [
+                    Left (Data {dataContent = Just "This is a basic paragraph with text.", dataType = TextT, symbol = Nothing})]}),
+
+                Right (Object {objType = List, objSymbol = Nothing,
+                datas = [
+                    Left (Data {dataContent = Just "This is a paragraph with ", dataType = TextT, symbol = Nothing}),
+
+                    Right (Object {objType = Section, objSymbol = Nothing,
+                    datas = [
+                        Left (Data {dataContent = Just "bold", dataType = BoldT, symbol = Just "bold"})]}),
+
+                    Left (Data {dataContent = Just ", ", dataType = TextT, symbol = Nothing}),
+
+                    Right (Object {objType = Section, objSymbol = Nothing,
+                    datas = [
+                        Left (Data {dataContent = Just "italic", dataType = BoldT, symbol = Just "italic"})]}),
+
+                    Left (Data {dataContent = Just " and ", dataType = TextT, symbol = Nothing}),
+
+                    Right (Object {objType = Section, objSymbol = Nothing,
+                    datas = [
+                        Left (Data {dataContent = Just "code", dataType = BoldT, symbol = Just "code"})]}),
+
+                Left (Data {dataContent = Just " text.", dataType = TextT, symbol = Nothing})]}),
+
+                Right (Object {objType = Section, objSymbol = Nothing,
+                datas = [
+                    Right (Object {objType = Section, objSymbol = Just "section",
+                    datas = [
+                        Left (Data {dataContent = Just "header 2", dataType = TextT, symbol = Just "title"}),
+
+                        Right (Object {objType = List, objSymbol = Just "content",
+                        datas = [
+                            Right (Object {objType = Section, objSymbol = Nothing,
+                            datas = [
+                                Right (Object {objType = CodeBlock, objSymbol = Just "codeblock",
+                                datas = [
+                                    Right (Object {objType = List, objSymbol = Nothing,
+                                    datas = [
+                                        Left (Data {dataContent = Just "This is a code block.", dataType = TextT, symbol = Nothing})]})]})]}),
+
+                            Right (Object {objType = Section, objSymbol = Nothing,
+                            datas = [
+                                Right (Object {objType = List, objSymbol = Just "list",
+                                datas = [
+                                    Right (Object {objType = List, objSymbol = Nothing,
+                                    datas = [
+                                        Left (Data {dataContent = Just "list item 1", dataType = TextT, symbol = Nothing})]}),
+
+                                    Right (Object {objType = List, objSymbol = Nothing,
+                                    datas = [
+                                        Left (Data {dataContent = Just "list item 2", dataType = TextT, symbol = Nothing})]}),
+
+                                    Right (Object {objType = List, objSymbol = Nothing,
+                                    datas = [
+                                        Left (Data {dataContent = Just "list item 3", dataType = TextT, symbol = Nothing})]})]})]}),
+
+                            Right (Object {objType = List, objSymbol = Nothing,
+                            datas = [
+                                Left (Data {dataContent = Just "This is a paragraph with a ", dataType = TextT, symbol = Nothing}),
+
+                                Right (Object {objType = Section, objSymbol = Nothing,
+                                datas = [
+                                    Right (Object {objType = Link, objSymbol = Just "link",
+                                    datas = [
+                                        Left (Data {dataContent = Just "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley", dataType = TextT, symbol = Just "url"}),
+
+                                        Right (Object {objType = List, objSymbol = Just "content",
+                                        datas = [
+                                            Left (Data {dataContent = Just "link", dataType = TextT, symbol = Nothing})]})]})]}),
+
+                                Left (Data {dataContent = Just ".", dataType = TextT, symbol = Nothing})]}),
+
+                            Right (Object {objType = List, objSymbol = Nothing,
+                            datas = [
+                                Left (Data {dataContent = Just "This is a paragraph with an image", dataType = TextT, symbol = Nothing}),
+
+                                Right (Object {objType = Section, objSymbol = Nothing,
+                                datas = [
+                                    Right (Object {objType = Image, objSymbol = Just "image",
+                                    datas = [
+                                        Left (Data {dataContent = Just "https://cdn-images-1.medium.com/max/697/1*tsHrUKwQXG1YZX0l957ISw.png", dataType = TextT, symbol = Just "url"}),
+
+                                        Right (Object {objType = Alt, objSymbol = Just "alt",
+                                        datas = [
+                                            Left (Data {dataContent = Just "Text to replace image", dataType = TextT, symbol = Nothing})]})]})]}),
+
+                            Left (Data {dataContent = Just ".", dataType = TextT, symbol = Nothing})]}),
+
+                            Right (Object {objType = Section, objSymbol = Nothing,
+                            datas = [
+                                Right (Object {objType = Section, objSymbol = Just "section",
+                                datas = [
+                                    Left (Data {dataContent = Just "", dataType = TextT, symbol = Just "title"}),
+
+                                    Right (Object {objType = List, objSymbol = Just "content",
+                                    datas = [
+                                        Right (Object {objType = Section, objSymbol = Nothing,
+                                        datas = [
+                                            Right (Object {objType = Section, objSymbol = Just "section",
+                                            datas = [
+                                                Left (Data {dataContent = Just "header 4", dataType = TextT, symbol = Just "title"}),
+
+                                                Right (Object {objType = List, objSymbol = Just "content",
+                                                datas = [
+                                                    Right (Object {objType = List, objSymbol = Nothing,
+                                                    datas = [
+                                                        Left (Data {dataContent = Just "Every syntax element can be use separately or combined.", dataType = TextT, symbol = Nothing})]}),
+
+                                                    Right (Object {objType = List, objSymbol = Nothing,
+                                                    datas = [
+                                                        Left (Data {dataContent = Just "Think about the different possible combinations.", dataType = TextT, symbol = Nothing})]}),
+
+                                                    Right (Object {objType = List, objSymbol = Nothing,
+                                                    datas = [
+                                                        Left (Data {dataContent = Just "All combined syntax elements aren't displayed in this document.", dataType = TextT, symbol = Nothing})
+                                                    ]
+                                                    }
+                                                    )
+                                                ]
+                                                }
+                                                )
+                                            ]
+                                            }
+                                            )
+                                        ]
+                                        }
+                                        )
+                                    ]
+                                    }
+                                    )
+                                ]
+                                }
+                                )
+                            ]
+                            }
+                            )
+                        ]
+                        }
+                        )
+                    ]
+                    }
+                    )
+                ]
+                }
+                )
+            ]
+            }
+            )
+        ]
+        }
+        )
+    ]
+    }
+    )
+]
+}
+}
