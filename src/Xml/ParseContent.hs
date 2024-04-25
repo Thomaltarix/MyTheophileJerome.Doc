@@ -21,26 +21,9 @@ module Xml.ParseContent (
     ) where
 
 import ParsingLib
-    ( parseAnyCharNotMatch,
-      parseStringBalise,
-      parseString,
-      parseMany,
-      parseAnyChar,
-      Parser(runParser),
-      (<|>),
-      parseSome,
-      parseStringQuote,
-      parseChar
-    )
 
 import DataStructure
-    ( createData,
-      defaultObject,
-      DataType(TextT, BoldT),
-      Data,
-      ObjectType(ListT, CodeBlockT, LinkT, AltT, ImageT, SectionT),
-      Object(datas, objType, objSymbol),
-      createObject )
+
 
 getContent :: String -> (Maybe Object, String)
 getContent str = case runParser parseXmlBody str of

@@ -43,21 +43,21 @@ markdownHeaderParsing = do
 markdownTitleParse :: Parser (MarkdownValue, String)
 markdownTitleParse = do
     _ <- parseString "title: "
-    a <- parseUntil '\n'
+    a <- parseUntilChar '\n'
     _ <- parseMany (parseAnyChar "\n \t")
     return (MarkdownTitle, a)
 
 markdownAuthorParse :: Parser (MarkdownValue, String)
 markdownAuthorParse = do
     _ <- parseString "author: "
-    a <- parseUntil '\n'
+    a <- parseUntilChar '\n'
     _ <- parseMany (parseAnyChar "\n \t")
     return (MarkdownAuthor, a)
 
 markdownDateParse :: Parser (MarkdownValue, String)
 markdownDateParse = do
     _ <- parseString "date: "
-    a <- parseUntil '\n'
+    a <- parseUntilChar '\n'
     _ <- parseMany (parseAnyChar "\n \t")
     return (MarkdownDate, a)
 
