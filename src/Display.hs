@@ -14,7 +14,6 @@ import DataStructure
 import Json.JsonDisplay
 import Xml.XmlDisplay
 import Markdown.MarkdownDisplay
-import PrintString
 import System.Exit(exitWith, ExitCode(ExitFailure))
 
 --
