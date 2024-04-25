@@ -22,6 +22,13 @@ parseMdBody = do
 
 parseHeaderOne :: Int -> Parser (Either Data Object)
 parseHeaderOne num 
+    | ((1 - (num + 1)) > 0) = do
+        a <- parseHeaderOne (num + 1)
+        return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just "") TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") [a]))
+            ])]))
     | num < 1 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "# "
@@ -39,6 +46,13 @@ parseHeaderOne num
 
 parseHeaderTwo :: Int -> Parser (Either Data Object)
 parseHeaderTwo num 
+    | ((2 - (num + 1)) > 0) = do
+        a <- parseHeaderTwo (num + 1)
+        return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just "") TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") [a]))
+            ])]))
     | num < 2 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "## "
@@ -56,6 +70,13 @@ parseHeaderTwo num
 
 parseHeaderThree :: Int -> Parser (Either Data Object)
 parseHeaderThree num 
+    | ((3 - (num + 1)) > 0) = do
+        a <- parseHeaderThree (num + 1)
+        return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just "") TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") [a]))
+            ])]))
     | num < 3 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "### "
@@ -73,6 +94,13 @@ parseHeaderThree num
 
 parseHeaderFour :: Int -> Parser (Either Data Object)
 parseHeaderFour num 
+    | ((4 - (num + 1)) > 0) = do
+        a <- parseHeaderFour (num + 1)
+        return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just "") TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") [a]))
+            ])]))
     | num < 4 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "#### "
@@ -90,6 +118,13 @@ parseHeaderFour num
 
 parseHeaderFive :: Int -> Parser (Either Data Object)
 parseHeaderFive num 
+    | ((5 - (num + 1)) > 0) = do
+        a <- parseHeaderFive (num + 1)
+        return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just "") TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") [a]))
+            ])]))
     | num < 5 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "##### "
@@ -107,6 +142,13 @@ parseHeaderFive num
 
 parseHeaderSix :: Int -> Parser (Either Data Object)
 parseHeaderSix num 
+    | ((6 - (num + 1)) > 0) = do
+        a <- parseHeaderSix (num + 1)
+        return (Right (createObject SectionT Nothing [
+            Right (createObject SectionT (Just "section") [
+                (Left (createData (Just "") TextT (Just "title"))),
+                (Right (createObject ListT (Just "content") [a]))
+            ])]))
     | num < 6 = do
     _ <- parseMany (parseAnyChar "\n \t")
     _ <- parseString "###### "
