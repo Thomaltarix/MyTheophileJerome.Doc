@@ -160,6 +160,43 @@ printXmlObjectEndSymbol handle
     let (_, endTag) = getXmlObjectTag obj in
     printString handle endTag spaces
 printXmlObjectEndSymbol _ _ _ = return ()
+containsImageOrLink :: [Either Data Object] -> Bool
+containsImageOrLink [] = False
+containsImageOrLink (Left _:xs) =
+    containsImageOrLink xs
+containsImageOrLink (Right (Object {objType = ImageT}):_) = True
+containsImageOrLink (Right (Object {objType = LinkT}):_) = True
+containsImageOrLink (Right obj:xs) =
+    containsImageOrLink (datas obj) || containsImageOrLink xs
+
+checkSubObject :: [Either Data Object] -> Bool
+checkSubObject [] = True
+checkSubObject (Left _:xs) = checkSubObject xs
+checkSubObject (Right _:_) = False
+
+isAData :: Either Data Object -> Bool
+isAData (Left (Data {dataType = TextT})) = True
+isAData (Right Object {objType = CodeBlockT}) = False
+isAData (Right obj@(Object {objType = SectionT}))
+    | containsImageOrLink (datas obj) = False
+    | otherwise = checkSubObject (datas obj)
+isAData (Right (Object {objType = ListT})) = False
+isAData (Right obj) = checkSubObject (datas obj)
+isAData _ = False
+
+checkDatas :: [Either Data Object] -> Bool
+checkDatas [] = False
+checkDatas [x] = isAData x
+checkDatas (Right (Object {objType = SectionT}):xs) =
+    checkDatas xs
+checkDatas (x:xs) = isAData x && checkDatas xs
+
+checkObject :: Object -> Object
+checkObject obj@(Object {objType = ListT})
+    | checkDatas (datas obj) = obj {objType = ParagraphT}
+    | otherwise = obj
+checkObject obj = obj
+
 
 printXmlObject :: Maybe Handle -> Object -> Int -> IO ()
 printXmlObject handle obj spaces = do
