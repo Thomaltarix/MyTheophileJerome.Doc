@@ -1,0 +1,5 @@
+USAGE: ./mypandoc -i ifile -f oformat [-o ofile] [-e iformat]
+	ifilepath	to the file to convert
+	oformat		output format (xml, json, markdown)
+	ofile		path to the output file
+	iformat		input format (xml, json, markdown)

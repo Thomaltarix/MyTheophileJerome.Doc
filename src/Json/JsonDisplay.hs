@@ -71,15 +71,27 @@ getJsonHeaderData Nothing _ _ = ""
 getJsonHeaderData (Just data_) end spaces =
     printJsonData data_ end spaces
 
+getJsonHeaderContent :: Maybe Data -> Maybe Data -> Maybe Data -> Int -> String
+getJsonHeaderContent title_ Nothing Nothing spaces =
+    getJsonHeaderData title_ True spaces
+getJsonHeaderContent title_ author_ Nothing spaces =
+    getJsonHeaderData title_ False spaces ++
+    getJsonHeaderData author_ True spaces
+getJsonHeaderContent title_ Nothing date_ spaces =
+    getJsonHeaderData title_ False spaces ++
+    getJsonHeaderData date_ True spaces
+getJsonHeaderContent title_ author_ date_ spaces =
+    getJsonHeaderData title_ False spaces ++
+    getJsonHeaderData author_ False spaces ++
+    getJsonHeaderData date_ True spaces
+
 getJsonHeader :: Header -> Bool -> Int -> String
 getJsonHeader
     Header {title = title_, author = author_, date = date_} end spaces =
     let (startTag, endTag) = getJsonObjectTag (Object SectionT Nothing []) in
     getString "\"header\": " spaces ++
     getString startTag 0 ++
-    getJsonHeaderData title_ False (spaces + 4) ++
-    getJsonHeaderData author_ False (spaces + 4) ++
-    getJsonHeaderData date_ True (spaces + 4) ++
+    getJsonHeaderContent title_ author_ date_ (spaces + 4) ++
     getString endTag spaces ++
     getEnd end
 
