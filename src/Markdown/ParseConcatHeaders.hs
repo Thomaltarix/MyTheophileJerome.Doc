@@ -38,16 +38,18 @@ createHeaderSection title o = (createObject SectionT Nothing [
         ])
 
 parseHeaderBd :: Int -> Int -> String -> Parser (Either Data Object)
-parseHeaderBd clevel thislevel trigger 
+parseHeaderBd clevel thislevel trigger
     | ((thislevel - (clevel + 1)) > 0) = do
         a <- parseHeaderBd (clevel + 1) thislevel trigger
         return (Right (wrapInEmptySection [a]))
     | clevel < thislevel = do
-    _ <- parseMany (parseAnyChar "\n \t")
-    _ <- parseString trigger
-    title <- parseUntilChar '\n'
-    content <- concatList thislevel
-    return (Right (createHeaderSection title content))
-    | otherwise = do
-        _ <- failingParse
-        return (Left (createData (Just "Error") TextT Nothing))
+        _ <- parseAnd (parseMany (parseAnyChar "\n \t")) (parseString trigger)
+        title <- parseUntilChar '\n'
+        content <- concatList thislevel
+        return (Right (createHeaderSection title content))
+    | otherwise = parseError
+
+parseError :: Parser (Either Data Object)
+parseError = do
+    _ <- failingParse
+    return (Left (createData (Just "Error") TextT Nothing))
