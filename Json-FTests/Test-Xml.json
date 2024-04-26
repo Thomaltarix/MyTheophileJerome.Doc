@@ -1,0 +1,11 @@
+[
+    {
+        "testName": "Test Xml-To-Xml",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "examples/syntaxe.xml", "-f", "xml"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "examples/syntaxe.xml",
+        "expectedStderrOutput": ""
+    }
+]
