@@ -77,9 +77,9 @@ processMarkdownDate str h =
 
 processMarkdown :: (MarkdownValue, String) -> Header -> Header
 processMarkdown (MarkdownTitle, markdownData)  h
-    = processMarkdownTitle markdownData h
+    = processMarkdownTitle markdownData (addHeaderOrder "title" h)
 processMarkdown (MarkdownAuthor, markdownData) h
-    = processMarkdownAuthor markdownData h
+    = processMarkdownAuthor markdownData (addHeaderOrder "author" h)
 processMarkdown (MarkdownDate, markdownData) h
-    = processMarkdownDate markdownData h
+    = processMarkdownDate markdownData (addHeaderOrder "date" h)
 processMarkdown _ h = h
