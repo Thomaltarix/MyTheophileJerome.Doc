@@ -240,5 +240,5 @@ printXml :: Maybe Handle -> DataStruct -> IO ()
 printXml handle dataStruct =
     let (startTag, endTag) = getXmlTag DocumentT in
     let xml = startTag ++ getXmlHeader (header dataStruct) 4
-            ++ getXmlBody (content dataStruct) 4 ++ endTag ++ "\n" in
+            ++ getXmlBody (content dataStruct) 4 ++ endTag in
         printString handle xml

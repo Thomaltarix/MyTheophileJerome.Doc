@@ -1,10 +1,10 @@
 <document>
-    <header title="Syntaxe XML">
+    <header title="Syntaxe JSON">
         <author>Fornes Leo</author>
         <date>2024-01-01</date>
     </header>
     <body>
-        <paragraph>This document is a simple example of the XML syntax.</paragraph>
+        <paragraph>This document is a simple example of the JSON syntax.</paragraph>
         <paragraph>Every syntax element is displayed in this document.</paragraph>
         <section title="header 1">
             <paragraph>This is a basic paragraph with text.</paragraph>
@@ -19,7 +19,7 @@
                     <paragraph>list item 3</paragraph>
                 </list>
                 <paragraph>This is a paragraph with a <link url="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley">link</link>.</paragraph>
-                <paragraph>This is a paragraph with an image<image url="https://cdn-images-1.medium.com/max/697/1*tsHrUKwQXG1YZX0l957ISw.png">Text to replace image</image>.</paragraph>
+                <paragraph>This is a paragraph with an image <image url="https://cdn-images-1.medium.com/max/697/1*tsHrUKwQXG1YZX0l957ISw.png">Text to replace image</image>.</paragraph>
                 <section title="">
                     <section title="header 4">
                         <paragraph>Every syntax element can be use separately or combined.</paragraph>

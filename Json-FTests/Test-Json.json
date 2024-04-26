@@ -1,0 +1,128 @@
+[
+    {
+        "testName": "Test Json-To-Json-1",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "examples/syntaxe.json", "-f", "json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "examples/syntaxe.json",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Json-2",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file.json", "-f", "json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/test_files/json/Json_simple_file.json",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Json-3",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file2.json", "-f", "json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/test_files/json/Json_simple_file2.json",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Json-4",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file3.json", "-f", "json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/test_files/json/Json_simple_file3.json",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Json-5",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file4.json", "-f", "json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/test_files/json/Json_simple_file4.json",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Xml-1",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "examples/syntaxe.json", "-f", "xml"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "examples/syntaxe_with_json_text.xml",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Xml-2",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file.json", "-f", "xml"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/test_files/xml/Xml_simple_file.xml",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Xml-3",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file2.json", "-f", "xml"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/test_files/xml/Xml_simple_file2.xml",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Xml-4",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file3.json", "-f", "xml"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/test_files/xml/Xml_simple_file3.xml",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Xml-5",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file4.json", "-f", "xml"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/test_files/xml/Xml_simple_file4.xml",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Error1",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file4.json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 84,
+        "expectedStdoutOutput": "Json-FTests/DisplayUsage.txt",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Error2",
+        "binaryPath": "./mypandoc",
+        "arguments": [""],
+        "commandLineInputs": [],
+        "expectedReturnCode": 84,
+        "expectedStdoutOutput": "Json-FTests/DisplayUsage.txt",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Error3",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file4.json", "-f"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 84,
+        "expectedStdoutOutput": "Json-FTests/DisplayUsage.txt",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Error4",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "", "-f", "json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 84,
+        "expectedStdoutOutput": "Json-FTests/DisplayUsage.txt",
+        "expectedStderrOutput": ""
+    }
+]

@@ -5,8 +5,6 @@
 -- Spec
 -}
 
-import Test.Hspec
-
 import TestParserJson
 
 main :: IO ()
