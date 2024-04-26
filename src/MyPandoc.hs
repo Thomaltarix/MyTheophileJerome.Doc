@@ -17,6 +17,8 @@ import Json.ParseJson
 import Control.Exception
 import System.IO
 import Xml.ParseXml (xmlParsing)
+import Markdown.ParseMarkdown (markdownParsing)
+
 
 myPandoc :: [String] -> IO ()
 myPandoc [] = displayUsage >> exitWith(ExitFailure 84)
@@ -42,7 +44,7 @@ myReadFile input = do
 getStruct :: Maybe String -> String -> Maybe DataStruct
 getStruct (Just "json") str = jsonParsing str
 getStruct (Just "xml") str = xmlParsing str
--- getStruct (Just "markdown") str = Nothing
+getStruct (Just "markdown") str = markdownParsing str
 getStruct _ _ = Nothing
 
 getInputFormat :: Maybe String -> String -> Maybe String

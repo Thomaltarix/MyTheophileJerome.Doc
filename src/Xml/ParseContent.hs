@@ -21,17 +21,6 @@ module Xml.ParseContent (
     ) where
 
 import ParsingLib
-    ( parseAnyCharNotMatch,
-      parseStringTag,
-      parseString,
-      parseMany,
-      parseAnyChar,
-      Parser(runParser),
-      (<|>),
-      parseSome,
-      parseStringQuote,
-      parseChar
-    )
 
 import DataStructure
     ( createData,
