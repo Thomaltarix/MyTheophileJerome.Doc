@@ -1,0 +1,32 @@
+[
+    {
+        "testName": "Test Json-To-Json-1",
+        "binaryPath": "./mypandoc",
+        "arguments": [
+            "-i",
+            "examples/syntaxe.json",
+            "-f",
+            "json"
+        ],
+        "commandLineInputs": [
+        ],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "examples/syntaxe.json",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Json-2",
+        "binaryPath": "./mypandoc",
+        "arguments": [
+            "-i",
+            "Json-FTests/Json_simple_file.json",
+            "-f",
+            "json"
+        ],
+        "commandLineInputs": [
+        ],
+        "expectedReturnCode": 0,
+        "expectedStdoutOutput": "Json-FTests/Json_simple_file.json",
+        "expectedStderrOutput": ""
+    }
+]
