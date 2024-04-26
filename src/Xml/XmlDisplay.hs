@@ -218,6 +218,23 @@ getXmlHeaderData (Just data_) spaces =
     ++ getString (myFromJustString (dataContent data_)) 0
     ++ getXmlEndSymbol (myFromJustString (symbol data_)) 0
 
+getXmlHeaderContent :: Header -> Int -> (Maybe String, Maybe String, Maybe String) -> String
+getXmlHeaderContent header_ spaces (_, Just "author", Just "date") =
+    getXmlHeaderData (author header_) spaces
+    ++ getXmlHeaderData (date header_) spaces
+getXmlHeaderContent header_ spaces (_, Just "date", Just "author") =
+    getXmlHeaderData (date header_) spaces
+    ++ getXmlHeaderData (author header_) spaces
+getXmlHeaderContent header_ spaces (_, Just "author", Nothing) =
+    getXmlHeaderData (author header_) spaces
+getXmlHeaderContent header_ spaces (_, Nothing, Just "author") =
+    getXmlHeaderData (author header_) spaces
+getXmlHeaderContent header_ spaces (_, Just "date", Nothing) =
+    getXmlHeaderData (date header_) spaces
+getXmlHeaderContent header_ spaces (_, Nothing, Just "date") =
+    getXmlHeaderData (date header_) spaces
+getXmlHeaderContent _ _ _ = ""
+
 getXmlHeader :: Header -> Int -> String
 getXmlHeader header_ spaces =
     let (startTag, endTag) = getXmlTag HeaderT in
@@ -225,8 +242,9 @@ getXmlHeader header_ spaces =
     ++ getString " title=\"" 0
     ++ getXmlHeaderData (title header_) 0
     ++ getString "\">\n" 0
-    ++ getXmlHeaderData (author header_) (spaces + 4)
-    ++ getXmlHeaderData (date header_) (spaces + 4)
+    ++ getXmlHeaderContent header_ (spaces + 4) (order header_)
+    -- ++ getXmlHeaderData (author header_) (spaces + 4)
+    -- ++ getXmlHeaderData (date header_) (spaces + 4)
     ++ getString endTag spaces
 
 getXmlBody :: Object -> Int -> String

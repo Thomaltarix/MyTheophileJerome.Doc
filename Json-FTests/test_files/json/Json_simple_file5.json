@@ -1,8 +1,8 @@
 {
     "header": {
         "title": "Hello World title",
-        "date": "Hello World date",
-        "author": "Hello World author"
+        "author": "Hello World author",
+        "date": "Hello World date"
     },
     "body": [
         [
