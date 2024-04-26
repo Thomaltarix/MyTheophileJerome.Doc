@@ -25,7 +25,8 @@ module ParsingLib (
     (<|>),
     parseStringQuote,
     parseIntString,
-    parseUntilString,
+    parseUntilThreeChar,
+    parseUntilTwoChar,
     parseStringTag,
     ) where
 
@@ -216,11 +217,21 @@ parseUntilChar c = Parser p where
     p str = case break (==c) str of
         (quoted, rest) -> Just (quoted, drop 1 rest)
 
-parseUntilString :: String -> Parser String
-parseUntilString [] = Parser (\_ -> Nothing)
-parseUntilString [_] = Parser (\_ -> Nothing)
-parseUntilString (x:y:_) = Parser p where
+parseUntilTwoChar :: String -> Parser String
+parseUntilTwoChar [] = Parser (\_ -> Nothing)
+parseUntilTwoChar [_] = Parser (\_ -> Nothing)
+parseUntilTwoChar (x:y:_) = Parser p where
     p str = case break (==x) str of
         (comprd, rst) -> case stripPrefix [x, y] rst of
+            Just rst' -> Just (comprd, rst')
+            Nothing -> Nothing
+
+parseUntilThreeChar :: String -> Parser String
+parseUntilThreeChar [] = Parser (\_ -> Nothing)
+parseUntilThreeChar [_] = Parser (\_ -> Nothing)
+parseUntilThreeChar [_, _] = Parser (\_ -> Nothing)
+parseUntilThreeChar (x:y:z:_) = Parser p where
+    p str = case break (==x) str of
+        (comprd, rst) -> case stripPrefix [x, y, z] rst of
             Just rst' -> Just (comprd, rst')
             Nothing -> Nothing

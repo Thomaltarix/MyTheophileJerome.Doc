@@ -4,6 +4,7 @@
 -- File description:
 -- ParseParagraph
 -}
+
 module Markdown.ParseParagraph (
     parseParagraph,
 ) where
@@ -36,7 +37,7 @@ parseItalic = do
 parseBold :: Parser (Either Data Object)
 parseBold = do
     _ <- parseString "**"
-    b <- parseUntilString "**"
+    b <- parseUntilTwoChar "**"
     return (Right (createObject SectionT Nothing [Left (createData (Just b)
         BoldT (Just "bold"))]))
 

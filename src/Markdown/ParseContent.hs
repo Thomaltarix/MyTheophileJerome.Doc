@@ -4,6 +4,7 @@
 -- File description:
 -- ParseContent
 -}
+
 module Markdown.ParseContent (
     getContent
     ) where

@@ -4,6 +4,7 @@
 -- File description:
 -- ParseBlocks
 -}
+
 module Markdown.ParseBlocks (
     parseListBlock,
     parseListItem,

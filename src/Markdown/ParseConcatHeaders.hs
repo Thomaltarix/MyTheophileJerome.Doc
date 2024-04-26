@@ -4,6 +4,7 @@
 -- File description:
 -- ParseConcatHeaders
 -}
+
 module Markdown.ParseConcatHeaders (
     concatList
 ) where
