@@ -3,6 +3,8 @@
         "title": "Hello World title"
     },
     "body": [
-        "Hello World content"
+        [
+            "Hello World content"
+        ]
     ]
 }
