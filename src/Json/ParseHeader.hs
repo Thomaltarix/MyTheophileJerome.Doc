@@ -82,7 +82,10 @@ processJsonDate str h =
     h {date = Just (createData (Just str) TextT (Just "date"))}
 
 processJson :: (JsonValue, String) -> Header -> Header
-processJson (JsonTitle, jsonData)  h = processJsonTitle jsonData h
-processJson (JsonAuthor, jsonData) h = processJsonAuthor jsonData h
-processJson (JsonDate, jsonData) h = processJsonDate jsonData h
+processJson (JsonTitle, jsonData)  h = processJsonTitle jsonData
+    (addHeaderOrder "title" h)
+processJson (JsonAuthor, jsonData) h = processJsonAuthor jsonData
+    (addHeaderOrder "author" h)
+processJson (JsonDate, jsonData) h = processJsonDate jsonData
+    (addHeaderOrder "date" h)
 processJson _ h = h
