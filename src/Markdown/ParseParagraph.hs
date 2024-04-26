@@ -4,7 +4,9 @@
 -- File description:
 -- ParseParagraph
 -}
-module Markdown.ParseParagraph where
+module Markdown.ParseParagraph (
+    parseParagraph,
+) where
 
 import ParsingLib
 

@@ -4,7 +4,9 @@
 -- File description:
 -- ParseContent
 -}
-module Markdown.ParseContent where
+module Markdown.ParseContent (
+    getContent
+    ) where
 
 import ParsingLib
 
@@ -12,7 +14,7 @@ import DataStructure
 
 import Markdown.ParseConcatHeaders
 
-import Markdown.ParseParagraph
+import Markdown.ParseParagraph()
 
 getContent :: String -> (Maybe Object, String)
 getContent str = case runParser parseMdBody str of

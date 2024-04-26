@@ -7,9 +7,11 @@
 
 module Markdown.ParseHeader (
     getHeader,
+    markdownHeader
     ) where
 
 import ParsingLib
+
 import DataStructure
 
 data MarkdownValue = MarkdownVoid | MarkdownTitle | MarkdownAuthor | MarkdownDate deriving (Show)

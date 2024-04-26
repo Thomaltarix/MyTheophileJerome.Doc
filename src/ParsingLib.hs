@@ -27,7 +27,6 @@ module ParsingLib (
     parseIntString,
     parseUntilString,
     parseStringTag,
-    parseIntString
     ) where
 
 import Control.Applicative
@@ -81,19 +80,18 @@ parseChar c = Parser p where
 
 failingParse :: Parser Char
 failingParse = Parser p where
-    p (x:xs) = Nothing
     p _ = Nothing
 
 checkNotChar :: Char -> Parser Char
 checkNotChar c = Parser p where
-    p str@(x:xs)
+    p str@(x:_)
         | x /= c = Just (c, str)
         | otherwise = Nothing
     p _ = Nothing
 
 checkIfChar :: Char -> Parser Char
 checkIfChar c = Parser p where
-    p str@(x:xs)
+    p str@(x:_)
         | x == c = Just (c, str)
         | otherwise = Nothing
     p _ = Nothing
@@ -217,12 +215,12 @@ parseUntilChar :: Char -> Parser String
 parseUntilChar c = Parser p where
     p str = case break (==c) str of
         (quoted, rest) -> Just (quoted, drop 1 rest)
-    p _ = Nothing
 
-parseUntilString :: String -> Parser String -- TO REWRITE // fwd only 2 char - update for * ```
+parseUntilString :: String -> Parser String
+parseUntilString [] = Parser (\_ -> Nothing)
+parseUntilString [_] = Parser (\_ -> Nothing)
 parseUntilString (x:y:_) = Parser p where
     p str = case break (==x) str of
         (comprd, rst) -> case stripPrefix [x, y] rst of
             Just rst' -> Just (comprd, rst')
             Nothing -> Nothing
-    p _ = Nothing

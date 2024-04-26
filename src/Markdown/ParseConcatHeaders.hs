@@ -4,7 +4,9 @@
 -- File description:
 -- ParseConcatHeaders
 -}
-module Markdown.ParseConcatHeaders where
+module Markdown.ParseConcatHeaders (
+    concatList
+) where
 
 import ParsingLib
 
@@ -30,9 +32,9 @@ wrapInEmptySection o = (createObject SectionT Nothing [
             ])])
 
 createHeaderSection :: String -> [Either Data Object] -> Object
-createHeaderSection title o = (createObject SectionT Nothing [
+createHeaderSection gtitle o = (createObject SectionT Nothing [
             Right (createObject SectionT (Just "section") [
-                (Left (createData (Just title) TextT (Just "title"))),
+                (Left (createData (Just gtitle) TextT (Just "title"))),
                 (Right (createObject ListT (Just "content") o))
             ])
         ])
@@ -44,9 +46,9 @@ parseHeaderBd clevel thislevel trigger
         return (Right (wrapInEmptySection [a]))
     | clevel < thislevel = do
         _ <- parseAnd (parseMany (parseAnyChar "\n \t")) (parseString trigger)
-        title <- parseUntilChar '\n'
-        content <- concatList thislevel
-        return (Right (createHeaderSection title content))
+        gtitle <- parseUntilChar '\n'
+        gcontent <- concatList thislevel
+        return (Right (createHeaderSection gtitle gcontent))
     | otherwise = parseError
 
 parseError :: Parser (Either Data Object)

@@ -4,7 +4,12 @@
 -- File description:
 -- ParseBlocks
 -}
-module Markdown.ParseBlocks where
+module Markdown.ParseBlocks (
+    parseListBlock,
+    parseListItem,
+    parseCodeBlock,
+    parseCodeblockItem
+) where
 
 import DataStructure
 
