@@ -26,7 +26,8 @@ jsonHeaderTests = hspec $ do
         {
             title = Just ( Data { dataContent = Just "Syntaxe JSON", dataType = TextT, symbol = Just "title"}),
             author = Nothing,
-            date = Nothing
+            date = Nothing,
+            order = (Just "title", Nothing, Nothing)
         }, "")
 
     it "getHeader whithout Date" $ do getHeader "{ \"header\": {\"title\": \"Syntaxe JSON\", \"author\": \"Hello\"}" defaultHeader
@@ -34,7 +35,8 @@ jsonHeaderTests = hspec $ do
         {
             title = Just ( Data { dataContent = Just "Syntaxe JSON", dataType = TextT, symbol = Just "title"}),
             author = Just ( Data { dataContent = Just "Hello", dataType = TextT, symbol = Just "author"}),
-            date = Nothing
+            date = Nothing,
+            order = (Just "title", Just "author", Nothing)
         }, "")
 
     it "getHeader whithout Author" $ do getHeader "{ \"header\": {\"title\": \"Syntaxe JSON\", \"date\": \"2101\"}" defaultHeader
@@ -42,7 +44,8 @@ jsonHeaderTests = hspec $ do
         {
             title = Just ( Data { dataContent = Just "Syntaxe JSON", dataType = TextT, symbol = Just "title"}),
             date = Just ( Data { dataContent = Just "2101", dataType = TextT, symbol = Just "date"}),
-            author = Nothing
+            author = Nothing,
+            order = (Just "title", Just "date", Nothing)
         }, "")
 
     it "getHeader whithout Title" $ do getHeader "{\"author\": \"Hello\"}" defaultHeader
@@ -51,7 +54,7 @@ jsonHeaderTests = hspec $ do
 jsonContentTests :: IO ()
 jsonContentTests = hspec $ do
     it "should return Nothing when given an empty string" $
-      getContent "" `shouldBe` (Nothing, "")
+        getContent "" `shouldBe` (Nothing, "")
 
     it "body false" $
         runParser parseJsonBody "" `shouldBe` Nothing

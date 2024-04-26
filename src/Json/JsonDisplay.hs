@@ -71,27 +71,47 @@ getJsonHeaderData Nothing _ _ = ""
 getJsonHeaderData (Just data_) end spaces =
     printJsonData data_ end spaces
 
-getJsonHeaderContent :: Maybe Data -> Maybe Data -> Maybe Data -> Int -> String
-getJsonHeaderContent title_ Nothing Nothing spaces =
-    getJsonHeaderData title_ True spaces
-getJsonHeaderContent title_ author_ Nothing spaces =
-    getJsonHeaderData title_ False spaces ++
-    getJsonHeaderData author_ True spaces
-getJsonHeaderContent title_ Nothing date_ spaces =
-    getJsonHeaderData title_ False spaces ++
-    getJsonHeaderData date_ True spaces
-getJsonHeaderContent title_ author_ date_ spaces =
-    getJsonHeaderData title_ False spaces ++
-    getJsonHeaderData author_ False spaces ++
-    getJsonHeaderData date_ True spaces
+getJsonHeaderContent :: Header -> String -> Int -> Bool -> String
+getJsonHeaderContent header_ "title" spaces end =
+    getJsonHeaderData (title header_) end spaces
+getJsonHeaderContent header_ "author" spaces end =
+    getJsonHeaderData (author header_) end spaces
+getJsonHeaderContent header_ "date" spaces end =
+    getJsonHeaderData (date header_) end spaces
+getJsonHeaderContent _ _ _ _ = ""
+
+parseJsonHeaderContent :: Header ->
+    (Maybe String, Maybe String, Maybe String) -> Int -> String
+parseJsonHeaderContent header_
+    (Just "title", Nothing, Nothing) spaces =
+    getJsonHeaderContent header_ "title" spaces True
+parseJsonHeaderContent header_
+    (Just "title", Just "author", Nothing) spaces =
+    getJsonHeaderContent header_ "title" spaces False
+    ++ getJsonHeaderContent header_ "author" spaces True
+parseJsonHeaderContent header_
+    (Just "title", Just "date", Nothing) spaces =
+    getJsonHeaderContent header_ "title" spaces False
+    ++ getJsonHeaderContent header_ "date" spaces True
+parseJsonHeaderContent header_
+    (Just "title", Just "author", Just "date") spaces =
+    getJsonHeaderContent header_ "title" spaces False
+    ++ getJsonHeaderContent header_ "author" spaces False
+    ++ getJsonHeaderContent header_ "date" spaces True
+parseJsonHeaderContent header_
+    (Just "title", Just "date", Just "author") spaces =
+    getJsonHeaderContent header_ "title" spaces False
+    ++ getJsonHeaderContent header_ "date" spaces False
+    ++ getJsonHeaderContent header_ "author" spaces True
+parseJsonHeaderContent _ _ _ = "test"
 
 getJsonHeader :: Header -> Bool -> Int -> String
 getJsonHeader
-    Header {title = title_, author = author_, date = date_} end spaces =
+    header_@Header {order = order_} end spaces =
     let (startTag, endTag) = getJsonObjectTag (Object SectionT Nothing []) in
     getString "\"header\": " spaces ++
     getString startTag 0 ++
-    getJsonHeaderContent title_ author_ date_ (spaces + 4) ++
+    parseJsonHeaderContent header_ order_ (spaces + 4) ++
     getString endTag spaces ++
     getEnd end
 

@@ -81,7 +81,10 @@ processXmlDate str h =
     h {date = Just (createData (Just str) TextT (Just "date"))}
 
 processxml :: (XmlValue, String) -> Header -> Header
-processxml (XmlTitle, xmlData)  h = processXmlTitle xmlData h
-processxml (XmlAuthor, xmlData) h = processXmlAuthor xmlData h
-processxml (XmlDate, xmlData) h = processXmlDate xmlData h
+processxml (XmlTitle, xmlData)  h = processXmlTitle xmlData
+    (addHeaderOrder "title" h)
+processxml (XmlAuthor, xmlData) h = processXmlAuthor xmlData
+    (addHeaderOrder "author" h)
+processxml (XmlDate, xmlData) h = processXmlDate xmlData
+    (addHeaderOrder "date" h)
 processxml _ h = h
