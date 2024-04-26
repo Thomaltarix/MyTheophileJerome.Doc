@@ -34,7 +34,7 @@ parseListItem = do
     _ <- parseMany (parseAnyChar " \t")
     return (c)
 
-parseCodeBlock :: Parser (Either Data Object) -- 
+parseCodeBlock :: Parser (Either Data Object)
 parseCodeBlock = do
     _ <- parseMany (parseAnyChar " \n\t")
     _ <- parseString "```"
