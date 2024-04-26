@@ -88,5 +88,41 @@
         "expectedReturnCode": 0,
         "expectedStdoutOutput": "Json-FTests/test_files/xml/Xml_simple_file4.xml",
         "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Error1",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file4.json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 84,
+        "expectedStdoutOutput": "Json-FTests/DisplayUsage.txt",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Error2",
+        "binaryPath": "./mypandoc",
+        "arguments": [""],
+        "commandLineInputs": [],
+        "expectedReturnCode": 84,
+        "expectedStdoutOutput": "Json-FTests/DisplayUsage.txt",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Error3",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "Json-FTests/test_files/json/Json_simple_file4.json", "-f"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 84,
+        "expectedStdoutOutput": "Json-FTests/DisplayUsage.txt",
+        "expectedStderrOutput": ""
+    },
+    {
+        "testName": "Test Json-To-Error4",
+        "binaryPath": "./mypandoc",
+        "arguments": ["-i", "", "-f", "json"],
+        "commandLineInputs": [],
+        "expectedReturnCode": 84,
+        "expectedStdoutOutput": "Json-FTests/DisplayUsage.txt",
+        "expectedStderrOutput": ""
     }
 ]
