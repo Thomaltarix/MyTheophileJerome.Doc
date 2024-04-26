@@ -24,13 +24,14 @@ parseParagraph = do
 
 parseText :: Parser (Either Data Object)
 parseText = do
-    t <- parseSome (parseAnyCharNotMatch "\n`*[!-#") -----MAJOR ISSUE TO FIX
+    t <- parseSome (parseAnyCharNotMatch "\n`*[!-#")
     return (Left (createData (Just t) TextT Nothing))
 
 parseItalic :: Parser (Either Data Object)
 parseItalic = do
     _ <- parseChar '*'
     s <- parseUntilChar '*'
+    _ <- checkNotChar '\0'
     return (Right (createObject SectionT Nothing [Left (createData (Just s)
         BoldT (Just "italic"))]))
 
