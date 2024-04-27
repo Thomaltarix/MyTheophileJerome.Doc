@@ -11,13 +11,17 @@ module Markdown.MarkdownDisplay (
     printMarkdown
     ) where
 
-import System.IO
+import System.IO ( Handle )
 import DataStructure
-import PrintString
-import Control.Monad
-import Control.Exception (handle)
-import Data.Coerce (coerce)
-import Json.ParseContent (getContent)
+    ( Data(..),
+      Object(..),
+      DataType(CodeT, TextT, ItalicT, BoldT),
+      ObjectType(SectionT, LinkT, ImageT, AltT, ParagraphT, ListT,
+                 CodeBlockT),
+      Header(..),
+      DataStruct(content, header) )
+import PrintString ( myFromJustString, printEnd, printString )
+import Control.Monad ( when )
 
 getMarkdownObjectTag :: Object -> (String, String)
 getMarkdownObjectTag obj = case objType obj of
@@ -106,13 +110,16 @@ calcNbReturnHelper (Left _:x) = calcNbReturnHelper x
 calcNbReturnHelper (Right xs:_) = case objSymbol xs of
     Just "link" -> 0
     Just "image" -> 0
+    Just "list" -> 1
     _ -> 2
 
 calcNbReturn :: Int -> Object -> Int
-calcNbReturn 1 _ = 0
+calcNbReturn 1 obj = case objSymbol obj of
+    Just "list" -> 0
+    _ -> 1
 calcNbReturn 0 _ = 1
 calcNbReturn _ obj = case objType obj of
-    CodeBlockT -> 1
+    CodeBlockT -> 0
     _ -> case objSymbol obj of
         Just "list" -> 0
         _ -> calcNbReturnHelper (datas obj)
