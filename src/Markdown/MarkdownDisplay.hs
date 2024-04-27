@@ -78,7 +78,7 @@ printMarkdownData handle data_ list =
     printString handle startTag 0 >>
     printListSymbol handle data_ list >>
     printString handle (myFromJustString (dataContent data_)) 0 >>
-    when (symbol data_ == Just "title") (printString handle "\n\n" 0) >>
+    when (symbol data_ == Just "title" && dataContent data_ /= Just "") (printString handle "\n\n" 0) >>
     printString handle endTag 0
 
 printMarkdownContent :: Maybe Handle -> [Either Data Object] -> Int -> Bool -> Int -> IO ()
@@ -108,21 +108,17 @@ calcNbReturnHelper :: [Either Data Object] -> Int
 calcNbReturnHelper [] = 2
 calcNbReturnHelper (Left _:x) = calcNbReturnHelper x
 calcNbReturnHelper (Right xs:_) = case objSymbol xs of
-    Just "link" -> 0
-    Just "image" -> 0
+    Just "link" -> 1
+    Just "image" -> 1
     Just "list" -> 1
-    _ -> 2
+    _ -> calcNbReturnHelper (datas xs)
 
 calcNbReturn :: Int -> Object -> Int
-calcNbReturn 1 obj = case objSymbol obj of
-    Just "list" -> 0
-    _ -> 1
+calcNbReturn 1 _ = 0
 calcNbReturn 0 _ = 1
 calcNbReturn _ obj = case objType obj of
     CodeBlockT -> 0
-    _ -> case objSymbol obj of
-        Just "list" -> 0
-        _ -> calcNbReturnHelper (datas obj)
+    _ -> calcNbReturnHelper (datas obj)
 
 isList :: Bool -> Object -> Bool
 isList True _ = True
