@@ -77,19 +77,19 @@ printMarkdownData handle data_ list =
     when (symbol data_ == Just "title") (printString handle "\n\n" 0) >>
     printString handle endTag 0
 
-printMarkdownContent :: Maybe Handle -> [Either Data Object] -> Int -> Bool -> IO ()
-printMarkdownContent _ [] _ _ = return ()
+printMarkdownContent :: Maybe Handle -> [Either Data Object] -> Int -> Bool -> Int -> IO ()
+printMarkdownContent _ [] _ _ _ = return ()
 -- printMarkdownContent handle [x] doubleReturn list = case x of
 --     Left data_ -> printMarkdownData handle data_ list
 --     Right obj -> printMarkdownObject handle obj doubleReturn list
 --     >> printMarkdownContent handle [] doubleReturn list
-printMarkdownContent handle_ (x:xs) nbReturn list = case x of
+printMarkdownContent handle_ (x:xs) nbReturn list nbSection = case x of
     Left data_ -> printMarkdownData handle_ data_ list
-    Right obj -> printMarkdownObject handle_ obj nbReturn list
-    >> printMarkdownContent handle_ xs nbReturn list
+    Right obj -> printMarkdownObject handle_ obj nbReturn list nbSection
+    >> printMarkdownContent handle_ xs nbReturn list nbSection
 
 displayReturns :: Maybe Handle -> Int -> IO ()
-displayReturns _ 0 = return ()
+displayReturns handle_ 0 = return ()
 displayReturns handle_ nb = printString handle_ "\n" 0 >> displayReturns handle_ (nb - 1)
 
 printEndSection :: Maybe Handle -> Object -> String -> Int -> IO ()
@@ -175,26 +175,30 @@ needPrintStartTag [] = False
 needPrintStartTag (Left data_:_) = symbol data_ == Just "title" && dataContent data_ /= Just ""
 needPrintStartTag (Right _:_) = False
 
-printStartTag :: Maybe Handle -> Object -> Int -> IO ()
-printStartTag handle_ obj@(Object {objType = CodeBlockT}) _ = printString handle_ "```\n" 0
-printStartTag handle_ obj spaces = when (needPrintStartTag (datas obj)) $ printString handle_ "# " spaces
+printStartTag :: Maybe Handle -> Object -> Int -> Int -> IO ()
+printStartTag handle_ obj@(Object {objType = CodeBlockT}) _ _ = printString handle_ "```\n" 0
+printStartTag handle_ obj _ nbSection =
+    when (needPrintStartTag (datas obj)) $ printString handle_ (replicate nbSection '#') 0 >> printString handle_ " " 0
 
-printMarkdownObject :: Maybe Handle -> Object -> Int -> Bool -> IO ()
-printMarkdownObject handle obj nbReturn list =
-    let (startTag, endTag) = getMarkdownObjectTag obj in
+printMarkdownObject :: Maybe Handle -> Object -> Int -> Bool -> Int -> IO ()
+printMarkdownObject handle obj nbReturn list nbSection =
+    let (_, endTag) = getMarkdownObjectTag obj in
     case objSymbol obj of
-        Nothing ->  printMarkdownContent handle (datas obj) (calcNbReturn nbReturn obj) (isList list obj) >>
+        Nothing ->  printMarkdownContent handle (datas obj) (calcNbReturn nbReturn obj) (isList list obj) nbSection >>
                     printEndSection handle obj endTag (calcNbReturn nbReturn obj)
         Just "link" -> printMarkdownLink handle obj
         Just "image" -> printMarkdownImage handle obj
-        Just _ ->   printStartTag handle obj 0 >>
-                    printMarkdownContent handle (datas obj) (calcNbReturn nbReturn obj) (isList list obj) >>
+        Just "section" -> printStartTag handle obj 0 nbSection >>
+                          printMarkdownContent handle (datas obj) (calcNbReturn nbReturn obj) (isList list obj) (nbSection + 1) >>
+                          printEndSection handle obj endTag (calcNbReturn nbReturn obj)
+        Just _ ->   printStartTag handle obj 0 nbSection >>
+                    printMarkdownContent handle (datas obj) (calcNbReturn nbReturn obj) (isList list obj) nbSection >>
                     printEndSection handle obj endTag (calcNbReturn nbReturn obj)
 
 printMarkdown :: Maybe Handle -> DataStruct -> IO ()
 printMarkdown handle dataStruct =
     let (_, endTag) = getMarkdownObjectTag (Object SectionT Nothing []) in
     printMarkdownHeader handle (header dataStruct) True 0 >>
-    printMarkdownObject handle (content dataStruct) 2 False >>
+    printMarkdownObject handle (content dataStruct) 2 False 1 >>
     printString handle endTag 0 >>
     printString handle "\n" 0
