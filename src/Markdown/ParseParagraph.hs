@@ -33,7 +33,7 @@ parseItalic = do
     s <- parseUntilChar '*'
     _ <- checkNotChar '\0'
     return (Right (createObject SectionT Nothing [Left (createData (Just s)
-        BoldT (Just "italic"))]))
+        ItalicT (Just "italic"))]))
 
 parseBold :: Parser (Either Data Object)
 parseBold = do
@@ -47,7 +47,7 @@ parseCode = do
     _ <- parseChar '`'
     c <- parseUntilChar '`'
     return (Right (createObject SectionT Nothing [Left (createData (Just c)
-        BoldT (Just "code"))]))
+        CodeT (Just "code"))]))
 
 parseImage :: Parser (Either Data Object)
 parseImage = do
