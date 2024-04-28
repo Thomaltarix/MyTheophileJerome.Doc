@@ -87,20 +87,16 @@ printMarkdownContent (x:xs) nbReturn list nbSection =
     printMarkdownContent [x] nbReturn list nbSection ++
     printMarkdownContent xs nbReturn list nbSection
 
-displayReturns :: Int -> String
-displayReturns 0 = ""
-displayReturns nb = "\n" ++ displayReturns (nb - 1)
-
-printEndSection :: Object -> String -> Int -> String
-printEndSection obj endTag nbReturn = let data_ = datas obj in
+printEndSection :: Object -> String -> String
+printEndSection obj endTag = let data_ = datas obj in
     case [data_] of
         [[Left (Data _ _ (Just "bold"))]] -> endTag
         [[Left (Data _ _ (Just "italic"))]] -> endTag
         [[Left (Data _ _ (Just "code"))]] -> endTag
-        _ -> displayReturns nbReturn ++ endTag
+        _ -> endTag
 
 calcNbReturnHelper :: [Either Data Object] -> Int
-calcNbReturnHelper [] = 2
+calcNbReturnHelper [] = 0
 calcNbReturnHelper (Left _:x) = calcNbReturnHelper x
 calcNbReturnHelper (Right Object {objSymbol = Just "link"}:_) = 1
 calcNbReturnHelper (Right Object {objSymbol = Just "image"}:_) = 1
@@ -167,12 +163,14 @@ printStartTag obj _ nbSection = if needPrintStartTag (datas obj)
     then replicate nbSection '#' ++ " " else ""
 
 printMarkdownObject :: Object -> Int -> Bool -> Int -> String
+printMarkdownObject obj@Object {objType = ListT, objSymbol = Nothing} nbReturn isList nbSection =
+    printMarkdownContent (datas obj) nbReturn isList nbSection ++ (if isList then "\n" else "\n\n")
 printMarkdownObject obj nbReturn list nbSection =
     let (_, endTag) = getMarkdownObjectTag obj in
     case objSymbol obj of
         Nothing ->  printMarkdownContent (datas obj)
             (calcNbReturn nbReturn obj) (isList list obj) nbSection ++
-            printEndSection obj endTag (calcNbReturn nbReturn obj)
+            printEndSection obj endTag
         Just "link" -> printMarkdownLink obj
         Just "image" -> printMarkdownImage obj
         Just "section" -> printStartTag obj 0 nbSection ++
@@ -180,12 +178,10 @@ printMarkdownObject obj nbReturn list nbSection =
                             (calcNbReturn nbReturn obj) (isList list obj)
                             (nbSection + 1) ++
                         printEndSection obj endTag
-                            (calcNbReturn nbReturn obj)
         Just _ ->   printStartTag obj 0 nbSection ++
                     printMarkdownContent (datas obj)
                         (calcNbReturn nbReturn obj) (isList list obj) nbSection
                     ++ printEndSection obj endTag
-                        (calcNbReturn nbReturn obj)
 
 printMarkdown :: Maybe Handle -> DataStruct -> IO ()
 printMarkdown handle dataStruct =
