@@ -9,10 +9,15 @@ module PrintString (
     printString,
     myFromJustString,
     getString,
-    getEnd
+    getEnd,
+    printEnd
     ) where
 
 import System.IO
+
+printEnd :: Maybe Handle -> Bool -> IO ()
+printEnd Nothing _ = return ()
+printEnd (Just handle) end = hPutStr handle (getEnd end)
 
 getEnd :: Bool -> String
 getEnd end
