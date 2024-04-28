@@ -20,10 +20,9 @@ COVERAGE_PATH = \
 # JSON TESTS
 JSON_TESTER = ./json_ftest.py
 
-JSON_TESTS =	Json-FTests/Test-Json.json 		\
-				Json-FTests/Test-Xml.json 		\
+JSON_TESTS = Json-FTests/Test.json
 
-.PHONY: all clean fclean re tests tests_run clean_tests
+.PHONY: all clean fclean re tests_run clean_tests
 
 all: $(NAME)
 
