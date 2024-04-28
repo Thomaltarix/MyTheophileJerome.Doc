@@ -22,12 +22,9 @@ defaultConf = Conf
     outputFile = Nothing,
     outputFormat = Nothing
   }
-
 getInputFile :: Conf -> String
-getInputFile conf =
-  case inputFile conf of
-    Just i -> i
-    Nothing -> ""
+getInputFile Conf {inputFile = Just i} = i
+getInputFile _ = ""
 
 options :: [OptDescr (Conf -> Conf)]
 options =
