@@ -145,7 +145,7 @@ needPrintStartTag (Right _:_) = False
 
 getSectionTitle :: [Either Data Object] -> String
 getSectionTitle [] = ""
-getSectionTitle (Left data_@Data{symbol = Just "title"}:_) = "\n"
+getSectionTitle (Left Data{symbol = Just "title"}:_) = "\n"
 getSectionTitle (Left _:_) = ""
 getSectionTitle (Right _:_) = ""
 
