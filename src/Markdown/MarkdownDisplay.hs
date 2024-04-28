@@ -43,8 +43,8 @@ getMarkdownSymbol :: String -> String
 getMarkdownSymbol "" = ""
 getMarkdownSymbol symbol_ = symbol_ ++ ": "
 
-printMarkdownDataHeader :: Data -> Bool -> String
-printMarkdownDataHeader data_ end =
+getMarkdownDataHeader :: Data -> Bool -> String
+getMarkdownDataHeader data_ end =
     let (startTag, endTag) = getMarkdownDataTag data_ in
     getMarkdownSymbol (myFromJustString (symbol data_)) ++
     startTag ++
@@ -52,44 +52,44 @@ printMarkdownDataHeader data_ end =
     endTag ++
     getEnd end
 
-printMakrdownHeaderData :: Maybe Data -> String
-printMakrdownHeaderData Nothing = ""
-printMakrdownHeaderData (Just data_) = printMarkdownDataHeader data_ True
+getMakrdownHeaderData :: Maybe Data -> String
+getMakrdownHeaderData Nothing = ""
+getMakrdownHeaderData (Just data_) = getMarkdownDataHeader data_ True
 
 printMarkdownHeader :: Header -> Bool -> String
 printMarkdownHeader Header {title = title_, author = author_, date = date_} _ =
     "---\n" ++
-    printMakrdownHeaderData title_ ++
-    printMakrdownHeaderData author_ ++
-    printMakrdownHeaderData date_ ++
+    getMakrdownHeaderData title_ ++
+    getMakrdownHeaderData author_ ++
+    getMakrdownHeaderData date_ ++
     "---\n\n"
 
-printListSymbol ::Bool -> String
-printListSymbol False = ""
-printListSymbol True = "- "
+getListSymbol ::Bool -> String
+getListSymbol False = ""
+getListSymbol True = "- "
 
-printMarkdownData :: Data -> Bool -> String
-printMarkdownData data_ list =
+getMarkdownData :: Data -> Bool -> String
+getMarkdownData data_ list =
     let (startTag, endTag) = getMarkdownDataTag data_ in
     startTag ++
-    printListSymbol list ++
+    getListSymbol list ++
     myFromJustString (dataContent data_) ++
     (if symbol data_ == Just "title" && dataContent data_ /= Just ""
         then "\n\n" else "") ++
     endTag
 
-printMarkdownContent :: [Either Data Object] -> Int -> Bool -> Int -> String
-printMarkdownContent [] _ _ _ = ""
-printMarkdownContent [x] doubleReturn list nbSection = case x of
-    Left data_ -> printMarkdownData data_ list
-    Right obj -> printMarkdownObject obj doubleReturn list nbSection
-printMarkdownContent (x:xs) nbReturn list nbSection =
-    printMarkdownContent [x] nbReturn list nbSection ++
-    printMarkdownContent xs nbReturn list nbSection
+getMarkdownContent :: [Either Data Object] -> Int -> Bool -> Int -> String
+getMarkdownContent [] _ _ _ = ""
+getMarkdownContent [x] doubleReturn list nbSection = case x of
+    Left data_ -> getMarkdownData data_ list
+    Right obj -> getMarkdownObject obj doubleReturn list nbSection
+getMarkdownContent (x:xs) nbReturn list nbSection =
+    getMarkdownContent [x] nbReturn list nbSection ++
+    getMarkdownContent xs nbReturn list nbSection
 
-displayReturns :: Int -> String
-displayReturns 0 = ""
-displayReturns nb = "\n" ++ displayReturns (nb - 1)
+getReturns :: Int -> String
+getReturns 0 = ""
+getReturns nb = "\n" ++ getReturns (nb - 1)
 
 printEndSection :: Object -> String -> Int -> String
 printEndSection obj endTag nbReturn = let data_ = datas obj in
@@ -97,7 +97,7 @@ printEndSection obj endTag nbReturn = let data_ = datas obj in
         [[Left (Data _ _ (Just "bold"))]] -> endTag
         [[Left (Data _ _ (Just "italic"))]] -> endTag
         [[Left (Data _ _ (Just "code"))]] -> endTag
-        _ -> displayReturns nbReturn ++ endTag
+        _ -> getReturns nbReturn ++ endTag
 
 calcNbReturnHelper :: [Either Data Object] -> Int
 calcNbReturnHelper [] = 2
@@ -134,8 +134,8 @@ getContentUrl (Right obj@Object {objSymbol = Just "content"}:_) =
     getContentUrl (datas obj)
 getContentUrl (Right _:xs) = getContentUrl xs
 
-printMarkdownLink :: Object -> String
-printMarkdownLink obj =
+getMarkdownLink :: Object -> String
+getMarkdownLink obj =
     let url = getUrl (datas obj)
         content_ = getContentUrl (datas obj) in
     "[" ++ content_ ++ "](" ++ url ++ ")"
@@ -149,8 +149,8 @@ getContentImage (Right obj@Object {objSymbol = Just "alt"}:_) =
     getContentImage (datas obj)
 getContentImage (Right _:xs) = getContentImage xs
 
-printMarkdownImage :: Object -> String
-printMarkdownImage obj =
+getMarkdownImage :: Object -> String
+getMarkdownImage obj =
     let url = getUrl (datas obj)
         content_ = getContentImage (datas obj) in
     "![" ++ content_ ++ "](" ++ url ++ ")"
@@ -161,9 +161,9 @@ needPrintStartTag (Left data_:_) = symbol data_ == Just "title"
     && dataContent data_ /= Just ""
 needPrintStartTag (Right _:_) = False
 
-printStartTag :: Object -> Int -> Int -> String
-printStartTag Object {objType = CodeBlockT} _ _ = "```\n"
-printStartTag obj _ nbSection = if needPrintStartTag (datas obj)
+getStartTag :: Object -> Int -> Int -> String
+getStartTag Object {objType = CodeBlockT} _ _ = "```\n"
+getStartTag obj _ nbSection = if needPrintStartTag (datas obj)
     then replicate nbSection '#' ++ " " else ""
 
 handleMarkdownObject :: Object -> Int -> Bool -> Int -> String -> String
@@ -191,28 +191,12 @@ handleMarkdownObject obj nReturn list nSection end =
 getMarkdownObject :: Object -> Int -> Bool -> Int -> String
 getMarkdownObject obj nbReturn list nbSection =
     let (_, endTag) = getMarkdownObjectTag obj in
-    case objSymbol obj of
-        Nothing ->  printMarkdownContent (datas obj)
-            (calcNbReturn nbReturn obj) (isList list obj) nbSection ++
-            printEndSection obj endTag (calcNbReturn nbReturn obj)
-        Just "link" -> printMarkdownLink obj
-        Just "image" -> printMarkdownImage obj
-        Just "section" -> printStartTag obj 0 nbSection ++
-                        printMarkdownContent (datas obj)
-                            (calcNbReturn nbReturn obj) (isList list obj)
-                            (nbSection + 1) ++
-                        printEndSection obj endTag
-                            (calcNbReturn nbReturn obj)
-        Just _ ->   printStartTag obj 0 nbSection ++
-                    printMarkdownContent (datas obj)
-                        (calcNbReturn nbReturn obj) (isList list obj) nbSection
-                    ++ printEndSection obj endTag
-                        (calcNbReturn nbReturn obj)
+    handleMarkdownObject obj nbReturn list nbSection endTag
 
 printMarkdown :: Maybe Handle -> DataStruct -> IO ()
 printMarkdown handle dataStruct =
     let (_, endTag) = getMarkdownObjectTag (Object SectionT Nothing []) in
     let markdown = printMarkdownHeader (header dataStruct) True ++
-            printMarkdownObject (content dataStruct) 2 False 1 ++
+            getMarkdownObject (content dataStruct) 2 False 1 ++
             endTag ++ "\n" in
     printString handle markdown
