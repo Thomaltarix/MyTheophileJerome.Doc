@@ -78,7 +78,8 @@ printMarkdownData handle data_ list =
     printString handle startTag 0 >>
     printListSymbol handle data_ list >>
     printString handle (myFromJustString (dataContent data_)) 0 >>
-    when (symbol data_ == Just "title" && dataContent data_ /= Just "") (printString handle "\n\n" 0) >>
+    when (symbol data_ == Just "title" && dataContent data_ /= Just "")
+        (printString handle "\n\n" 0) >>
     printString handle endTag 0
 
 printMarkdownContent :: Maybe Handle -> [Either Data Object] -> Int -> Bool -> Int -> IO ()
@@ -93,8 +94,9 @@ printMarkdownContent handle_ (x:xs) nbReturn list nbSection = case x of
     >> printMarkdownContent handle_ xs nbReturn list nbSection
 
 displayReturns :: Maybe Handle -> Int -> IO ()
-displayReturns handle_ 0 = return ()
-displayReturns handle_ nb = printString handle_ "\n" 0 >> displayReturns handle_ (nb - 1)
+displayReturns _ 0 = print 0
+displayReturns handle_ nb = print nb >> printString handle_ "\n" 0
+    >> displayReturns handle_ (nb - 1)
 
 printEndSection :: Maybe Handle -> Object -> String -> Int -> IO ()
 printEndSection handle_ obj endTag nbReturn = let data_ = datas obj in
@@ -175,28 +177,38 @@ printMarkdownImage handle_ obj =
 
 needPrintStartTag :: [Either Data Object] -> Bool
 needPrintStartTag [] = False
-needPrintStartTag (Left data_:_) = symbol data_ == Just "title" && dataContent data_ /= Just ""
+needPrintStartTag (Left data_:_) = symbol data_ == Just "title"
+    && dataContent data_ /= Just ""
 needPrintStartTag (Right _:_) = False
 
 printStartTag :: Maybe Handle -> Object -> Int -> Int -> IO ()
-printStartTag handle_ obj@(Object {objType = CodeBlockT}) _ _ = printString handle_ "```\n" 0
+printStartTag handle_ obj@(Object {objType = CodeBlockT}) _ _ =
+        printString handle_ "```\n" 0
 printStartTag handle_ obj _ nbSection =
-    when (needPrintStartTag (datas obj)) $ printString handle_ (replicate nbSection '#') 0 >> printString handle_ " " 0
+    when (needPrintStartTag (datas obj)) $ printString handle_
+        (replicate nbSection '#') 0
+        >> printString handle_ " " 0
 
 printMarkdownObject :: Maybe Handle -> Object -> Int -> Bool -> Int -> IO ()
 printMarkdownObject handle obj nbReturn list nbSection =
     let (_, endTag) = getMarkdownObjectTag obj in
     case objSymbol obj of
-        Nothing ->  printMarkdownContent handle (datas obj) (calcNbReturn nbReturn obj) (isList list obj) nbSection >>
-                    printEndSection handle obj endTag (calcNbReturn nbReturn obj)
+        Nothing ->  printMarkdownContent handle (datas obj)
+            (calcNbReturn nbReturn obj) (isList list obj) nbSection >>
+            printEndSection handle obj endTag (calcNbReturn nbReturn obj)
         Just "link" -> printMarkdownLink handle obj
         Just "image" -> printMarkdownImage handle obj
         Just "section" -> printStartTag handle obj 0 nbSection >>
-                          printMarkdownContent handle (datas obj) (calcNbReturn nbReturn obj) (isList list obj) (nbSection + 1) >>
-                          printEndSection handle obj endTag (calcNbReturn nbReturn obj)
+                          printMarkdownContent handle (datas obj)
+                            (calcNbReturn nbReturn obj) (isList list obj)
+                            (nbSection + 1) >>
+                          printEndSection handle obj endTag
+                            (calcNbReturn nbReturn obj)
         Just _ ->   printStartTag handle obj 0 nbSection >>
-                    printMarkdownContent handle (datas obj) (calcNbReturn nbReturn obj) (isList list obj) nbSection >>
-                    printEndSection handle obj endTag (calcNbReturn nbReturn obj)
+                    printMarkdownContent handle (datas obj)
+                        (calcNbReturn nbReturn obj) (isList list obj) nbSection
+                    >> printEndSection handle obj endTag
+                        (calcNbReturn nbReturn obj)
 
 printMarkdown :: Maybe Handle -> DataStruct -> IO ()
 printMarkdown handle dataStruct =
