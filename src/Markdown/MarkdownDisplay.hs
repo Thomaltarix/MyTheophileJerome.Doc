@@ -166,8 +166,30 @@ printStartTag Object {objType = CodeBlockT} _ _ = "```\n"
 printStartTag obj _ nbSection = if needPrintStartTag (datas obj)
     then replicate nbSection '#' ++ " " else ""
 
-printMarkdownObject :: Object -> Int -> Bool -> Int -> String
-printMarkdownObject obj nbReturn list nbSection =
+handleMarkdownObject :: Object -> Int -> Bool -> Int -> String -> String
+handleMarkdownObject obj@(Object {objSymbol = Just "link"}) _ _ _ _ =
+    getMarkdownLink obj
+handleMarkdownObject obj@(Object {objSymbol = Just "image"}) _ _ _ _ =
+    getMarkdownImage obj
+handleMarkdownObject
+    obj@(Object {objSymbol = Nothing}) nReturn list nSection end =
+        getMarkdownContent (datas obj) (calcNbReturn nReturn obj)
+        (isList list obj) nSection ++
+        printEndSection obj end (calcNbReturn nReturn obj)
+handleMarkdownObject
+    obj@(Object {objSymbol = Just "section"}) nReturn list nSection end =
+        getStartTag obj 0 nSection ++
+        getMarkdownContent (datas obj) (calcNbReturn nReturn obj)
+        (isList list obj) (nSection + 1) ++
+        printEndSection obj end (calcNbReturn nReturn obj)
+handleMarkdownObject obj nReturn list nSection end =
+    getStartTag obj 0 nSection ++
+    getMarkdownContent (datas obj) (calcNbReturn nReturn obj)
+    (isList list obj) nSection ++
+    printEndSection obj end (calcNbReturn nReturn obj)
+
+getMarkdownObject :: Object -> Int -> Bool -> Int -> String
+getMarkdownObject obj nbReturn list nbSection =
     let (_, endTag) = getMarkdownObjectTag obj in
     case objSymbol obj of
         Nothing ->  printMarkdownContent (datas obj)
