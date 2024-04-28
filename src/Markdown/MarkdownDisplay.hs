@@ -40,47 +40,47 @@ getMarkdownDataTag data_ = case dataType data_ of
     BoldT -> ("**", "**")
     CodeT -> ("`", "`")
 
-printMarkdownSymbol :: Maybe Handle -> String -> Int -> IO ()
-printMarkdownSymbol handle "" spaces = printString handle "" spaces
-printMarkdownSymbol handle symbol_ _ =
-    printString handle symbol_ 0 >>
-    printString handle ": " 0
+printMarkdownSymbol :: Maybe Handle -> String  -> IO ()
+printMarkdownSymbol handle "" = printString handle ""
+printMarkdownSymbol handle symbol_ =
+    printString handle symbol_ >>
+    printString handle ": "
 
-printMarkdownDataHeader :: Maybe Handle -> Data -> Bool -> Int -> IO ()
-printMarkdownDataHeader handle data_ end spaces =
+printMarkdownDataHeader :: Maybe Handle -> Data -> Bool  -> IO ()
+printMarkdownDataHeader handle data_ end =
     let (startTag, endTag) = getMarkdownDataTag data_ in
-    printMarkdownSymbol handle (myFromJustString (symbol data_)) spaces >>
-    printString handle startTag 0 >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
-    printString handle endTag 0 >>
+    printMarkdownSymbol handle (myFromJustString (symbol data_)) >>
+    printString handle startTag >>
+    printString handle (myFromJustString (dataContent data_)) >>
+    printString handle endTag >>
     printEnd handle end
 
-printMarkdownHeaderData :: Maybe Handle -> Maybe Data -> Bool -> Int -> IO ()
-printMarkdownHeaderData _ Nothing _ _ = return ()
-printMarkdownHeaderData handle (Just data_) end spaces =
-    printMarkdownDataHeader handle data_ end spaces
+printMarkdownHeaderData :: Maybe Handle -> Maybe Data -> IO ()
+printMarkdownHeaderData _ Nothing = return ()
+printMarkdownHeaderData handle (Just data_) =
+    printMarkdownDataHeader handle data_ True
 
-printMarkdownHeader :: Maybe Handle -> Header -> Bool -> Int -> IO ()
+printMarkdownHeader :: Maybe Handle -> Header -> Bool -> IO ()
 printMarkdownHeader handle
-    Header {title = title_, author = author_, date = date_} _ spaces =
-    printString handle "---\n" spaces >>
-    printMarkdownHeaderData handle title_ True spaces >>
-    printMarkdownHeaderData handle author_ True spaces >>
-    printMarkdownHeaderData handle date_ True spaces >>
-    printString handle "---\n\n" spaces
+    Header {title = title_, author = author_, date = date_} _ =
+    printString handle "---\n" >>
+    printMarkdownHeaderData handle title_ >>
+    printMarkdownHeaderData handle author_ >>
+    printMarkdownHeaderData handle date_ >>
+    printString handle "---\n\n"
 
 printListSymbol :: Maybe Handle -> Data -> Bool -> IO ()
-printListSymbol handle data_ list = when list $ printString handle "- " 0
+printListSymbol handle _ list = when list $ printString handle "- "
 
 printMarkdownData :: Maybe Handle -> Data -> Bool -> IO ()
 printMarkdownData handle data_ list =
     let (startTag, endTag) = getMarkdownDataTag data_ in
-    printString handle startTag 0 >>
+    printString handle startTag >>
     printListSymbol handle data_ list >>
-    printString handle (myFromJustString (dataContent data_)) 0 >>
+    printString handle (myFromJustString (dataContent data_)) >>
     when (symbol data_ == Just "title" && dataContent data_ /= Just "")
-        (printString handle "\n\n" 0) >>
-    printString handle endTag 0
+        (printString handle "\n\n") >>
+    printString handle endTag
 
 printMarkdownContent :: Maybe Handle -> [Either Data Object] -> Int -> Bool -> Int -> IO ()
 printMarkdownContent _ [] _ _ _ = return ()
@@ -94,17 +94,17 @@ printMarkdownContent handle_ (x:xs) nbReturn list nbSection = case x of
     >> printMarkdownContent handle_ xs nbReturn list nbSection
 
 displayReturns :: Maybe Handle -> Int -> IO ()
-displayReturns _ 0 = print 0
-displayReturns handle_ nb = print nb >> printString handle_ "\n" 0
+displayReturns _ 0 = return ()
+displayReturns handle_ nb = print nb >> printString handle_ "\n"
     >> displayReturns handle_ (nb - 1)
 
 printEndSection :: Maybe Handle -> Object -> String -> Int -> IO ()
 printEndSection handle_ obj endTag nbReturn = let data_ = datas obj in
-   case [data_] of
-       [[Left (Data _ _ (Just "bold"))]] -> printString handle_ endTag 0
-       [[Left (Data _ _ (Just "italic"))]] -> printString handle_ endTag 0
-       [[Left (Data _ _ (Just "code"))]] -> printString handle_ endTag 0
-       _ -> displayReturns handle_ nbReturn >> printString handle_ endTag 0
+    case [data_] of
+        [[Left (Data _ _ (Just "bold"))]] -> printString handle_ endTag
+        [[Left (Data _ _ (Just "italic"))]] -> printString handle_ endTag
+        [[Left (Data _ _ (Just "code"))]] -> printString handle_ endTag
+        _ -> displayReturns handle_ nbReturn >> printString handle_ endTag
 
 calcNbReturnHelper :: [Either Data Object] -> Int
 calcNbReturnHelper [] = 2
@@ -150,11 +150,11 @@ printMarkdownLink :: Maybe Handle -> Object -> IO ()
 printMarkdownLink handle_ obj =
     let url = getUrl (datas obj)
         content_ = getContentUrl (datas obj) in
-    printString handle_ "[" 0 >>
-    printString handle_ content_ 0 >>
-    printString handle_ "](" 0 >>
-    printString handle_ url 0 >>
-    printString handle_ ")" 0
+    printString handle_ "[" >>
+    printString handle_ content_ >>
+    printString handle_ "](" >>
+    printString handle_ url >>
+    printString handle_ ")"
 
 getContentImage :: [Either Data Object] -> String
 getContentImage [] = ""
@@ -169,11 +169,11 @@ printMarkdownImage :: Maybe Handle -> Object -> IO ()
 printMarkdownImage handle_ obj =
     let url = getUrl (datas obj)
         content_ = getContentImage (datas obj) in
-    printString handle_ "![" 0 >>
-    printString handle_ content_ 0 >>
-    printString handle_ "](" 0 >>
-    printString handle_ url 0 >>
-    printString handle_ ")" 0
+    printString handle_ "![" >>
+    printString handle_ content_ >>
+    printString handle_ "](" >>
+    printString handle_ url >>
+    printString handle_ ")"
 
 needPrintStartTag :: [Either Data Object] -> Bool
 needPrintStartTag [] = False
@@ -182,12 +182,12 @@ needPrintStartTag (Left data_:_) = symbol data_ == Just "title"
 needPrintStartTag (Right _:_) = False
 
 printStartTag :: Maybe Handle -> Object -> Int -> Int -> IO ()
-printStartTag handle_ obj@(Object {objType = CodeBlockT}) _ _ =
-        printString handle_ "```\n" 0
+printStartTag handle_ Object {objType = CodeBlockT} _ _ =
+        printString handle_ "```\n"
 printStartTag handle_ obj _ nbSection =
     when (needPrintStartTag (datas obj)) $ printString handle_
-        (replicate nbSection '#') 0
-        >> printString handle_ " " 0
+        (replicate nbSection '#')
+        >> printString handle_ " "
 
 printMarkdownObject :: Maybe Handle -> Object -> Int -> Bool -> Int -> IO ()
 printMarkdownObject handle obj nbReturn list nbSection =
@@ -199,10 +199,10 @@ printMarkdownObject handle obj nbReturn list nbSection =
         Just "link" -> printMarkdownLink handle obj
         Just "image" -> printMarkdownImage handle obj
         Just "section" -> printStartTag handle obj 0 nbSection >>
-                          printMarkdownContent handle (datas obj)
+                        printMarkdownContent handle (datas obj)
                             (calcNbReturn nbReturn obj) (isList list obj)
                             (nbSection + 1) >>
-                          printEndSection handle obj endTag
+                        printEndSection handle obj endTag
                             (calcNbReturn nbReturn obj)
         Just _ ->   printStartTag handle obj 0 nbSection >>
                     printMarkdownContent handle (datas obj)
@@ -213,7 +213,7 @@ printMarkdownObject handle obj nbReturn list nbSection =
 printMarkdown :: Maybe Handle -> DataStruct -> IO ()
 printMarkdown handle dataStruct =
     let (_, endTag) = getMarkdownObjectTag (Object SectionT Nothing []) in
-    printMarkdownHeader handle (header dataStruct) True 0 >>
+    printMarkdownHeader handle (header dataStruct) True>>
     printMarkdownObject handle (content dataStruct) 2 False 1 >>
-    printString handle endTag 0 >>
-    printString handle "\n" 0
+    printString handle endTag >>
+    printString handle "\n"
