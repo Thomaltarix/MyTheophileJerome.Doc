@@ -53,6 +53,7 @@ printMarkdownDataHeader handle data_ end =
     printString handle startTag >>
     printString handle (myFromJustString (dataContent data_)) >>
     printString handle endTag >>
+    printString handle "\n" >>
     printEnd handle end
 
 printMarkdownHeaderData :: Maybe Handle -> Maybe Data -> IO ()
@@ -95,7 +96,7 @@ printMarkdownContent handle_ (x:xs) nbReturn list nbSection = case x of
 
 displayReturns :: Maybe Handle -> Int -> IO ()
 displayReturns _ 0 = return ()
-displayReturns handle_ nb = print nb >> printString handle_ "\n"
+displayReturns handle_ nb = printString handle_ "\n"
     >> displayReturns handle_ (nb - 1)
 
 printEndSection :: Maybe Handle -> Object -> String -> Int -> IO ()
