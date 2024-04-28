@@ -14,12 +14,12 @@ module Markdown.MarkdownDisplay (
 import System.IO ( Handle )
 import DataStructure
     ( Data(..),
-      Object(..),
-      DataType(CodeT, TextT, ItalicT, BoldT),
-      ObjectType(SectionT, LinkT, ImageT, AltT, ParagraphT, ListT,
-                 CodeBlockT),
-      Header(..),
-      DataStruct(content, header) )
+    Object(..),
+    DataType(CodeT, TextT, ItalicT, BoldT),
+    ObjectType(SectionT, LinkT, ImageT, AltT, ParagraphT, ListT,
+    CodeBlockT),
+    Header(..),
+    DataStruct(content, header) )
 import PrintString ( myFromJustString, printEnd, printString )
 import Control.Monad ( when )
 
