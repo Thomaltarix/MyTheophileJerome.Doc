@@ -138,7 +138,7 @@ getContentUrl [] = ""
 getContentUrl (Left data_@Data {symbol = Nothing}:_) =
     myFromJustString (dataContent data_)
 getContentUrl (Left _:xs) = getContentUrl xs
-getContentUrl (Right obj@Object {objSymbol = Just "conent"}:_) =
+getContentUrl (Right obj@Object {objSymbol = Just "content"}:_) =
     getContentUrl (datas obj)
 getContentUrl (Right _:xs) = getContentUrl xs
 
