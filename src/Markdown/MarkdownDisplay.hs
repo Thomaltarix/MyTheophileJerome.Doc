@@ -158,12 +158,12 @@ printMarkdownLink handle_ obj =
 
 getContentImage :: [Either Data Object] -> String
 getContentImage [] = ""
-getContentImage (Left data_:x) = if symbol data_ == Nothing
-                                then myFromJustString (dataContent data_)
-                                else getContentImage x
-getContentImage (Right xs:x) = if objSymbol xs == Just "alt"
-                                then getContentImage (datas xs)
-                                else getContentImage x
+getContentImage (Left data_@Data {symbol = Nothing}:_) =
+    myFromJustString (dataContent data_)
+getContentImage (Left _:xs) = getContentImage xs
+getContentImage (Right obj@Object {objSymbol = Just "alt"}:_) =
+    getContentImage (datas obj)
+getContentImage (Right _:xs) = getContentImage xs
 
 printMarkdownImage :: Maybe Handle -> Object -> IO ()
 printMarkdownImage handle_ obj =
