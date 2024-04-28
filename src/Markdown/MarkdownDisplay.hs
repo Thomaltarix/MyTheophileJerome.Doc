@@ -139,12 +139,12 @@ getUrl (Right _:x) = getUrl x
 
 getContentUrl :: [Either Data Object] -> String
 getContentUrl [] = ""
-getContentUrl (Left data_:x) = if symbol data_ == Nothing
-                                then myFromJustString (dataContent data_)
-                                else getContentUrl x
-getContentUrl (Right xs:x) = if objSymbol xs == Just "content"
-                                then getContentUrl (datas xs)
-                                else getContentUrl x
+getContentUrl (Left data_@Data {symbol = Nothing}:_) =
+    myFromJustString (dataContent data_)
+getContentUrl (Left _:xs) = getContentUrl xs
+getContentUrl (Right obj@Object {objSymbol = Just "conent"}:_) =
+    getContentUrl (datas obj)
+getContentUrl (Right _:xs) = getContentUrl xs
 
 printMarkdownLink :: Maybe Handle -> Object -> IO ()
 printMarkdownLink handle_ obj =
