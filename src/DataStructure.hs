@@ -16,7 +16,8 @@ module DataStructure (
     defaultHeader,
     createData,
     createObject,
-    defaultObject
+    defaultObject,
+    addHeaderOrder
     ) where
 
 
@@ -40,7 +41,8 @@ data Header = Header
     {
         title :: Maybe Data,
         author :: Maybe Data,
-        date :: Maybe Data
+        date :: Maybe Data,
+        order :: (Maybe String, Maybe String, Maybe String)
     } deriving (Eq, Show)
 
 -- enum
@@ -56,13 +58,13 @@ data Object = Object
     } deriving (Eq, Show)
 
 instance Show ObjectType where
-    show SectionT = "Section"
-    show ListT = "List"
-    show CodeBlockT = "CodeBlock"
-    show LinkT = "Link"
-    show ParagraphT = "Paragraph"
-    show ImageT = "Image"
-    show AltT = "Alt"
+    show SectionT = "SectionT"
+    show ListT = "ListT"
+    show CodeBlockT = "CodeBlockT"
+    show LinkT = "LinkT"
+    show ParagraphT = "ParagraphT"
+    show ImageT = "ImageT"
+    show AltT = "AltT"
 
 data Data = Data
     {
@@ -76,7 +78,8 @@ defaultHeader = Header
     {
     title = Nothing,
     author = Nothing,
-    date = Nothing
+    date = Nothing,
+    order = (Nothing, Nothing, Nothing)
     }
 
 defaultObject :: Object
@@ -96,3 +99,17 @@ createObject t s d = Object {
     objSymbol  = s,
     datas = d
     }
+
+addHeaderOrder :: String -> Header -> Header
+addHeaderOrder s Header{
+    title = t, author = a, date = d, order = (Nothing, Nothing, Nothing)} =
+    Header{title = t, author = a, date = d, order = (Just s, Nothing, Nothing)}
+addHeaderOrder s Header{
+    title = t, author = a, date = d, order = (Just o1, Nothing, Nothing)} =
+    Header{title = t, author = a, date = d, order = (Just o1, Just s, Nothing)}
+addHeaderOrder s Header{
+    title = t, author = a, date = d, order = (Just o1, Just o2, Nothing)} =
+    Header{title = t, author = a, date = d, order = (Just o1, Just o2, Just s)}
+addHeaderOrder _ Header{
+    title = t, author = a, date = d, order = o} =
+    Header{title = t, author = a, date = d, order = o}

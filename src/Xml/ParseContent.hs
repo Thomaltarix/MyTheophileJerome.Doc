@@ -21,22 +21,11 @@ module Xml.ParseContent (
     ) where
 
 import ParsingLib
-    ( parseAnyCharNotMatch,
-      parseStringTag,
-      parseString,
-      parseMany,
-      parseAnyChar,
-      Parser(runParser),
-      (<|>),
-      parseSome,
-      parseStringQuote,
-      parseChar
-    )
 
 import DataStructure
     ( createData,
       defaultObject,
-      DataType(TextT, BoldT),
+      DataType(TextT, BoldT, ItalicT, CodeT),
       Data,
       ObjectType(ListT, CodeBlockT, LinkT, AltT, ImageT, SectionT),
       Object(datas, objType, objSymbol),
@@ -83,7 +72,7 @@ parseItalic :: Parser (Either Data Object)
 parseItalic = do
     s <- parseStringTag "italic"
     return (Right (createObject SectionT Nothing [Left (createData (Just s)
-        BoldT (Just "italic"))]))
+        ItalicT (Just "italic"))]))
 
 parseBold :: Parser (Either Data Object)
 parseBold = do
@@ -95,7 +84,7 @@ parseCode :: Parser (Either Data Object)
 parseCode = do
     c <- parseStringTag "code"
     return (Right (createObject SectionT Nothing [Left (createData (Just c)
-        BoldT (Just "code"))]))
+        CodeT (Just "code"))]))
 
 parseTitle :: Parser (Either Data Object)
 parseTitle = do

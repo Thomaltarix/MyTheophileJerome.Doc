@@ -1,0 +1,10 @@
+<document>
+    <header title="Hello World title">
+        <author>Hello World author</author>
+        <date>Hello World date</date>
+    </header>
+    <body>
+        <paragraph>Hello World content</paragraph>
+        <paragraph>Hello World content</paragraph>
+    </body>
+</document>

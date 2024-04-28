@@ -6,7 +6,26 @@
 -}
 
 module Json.ParseContent (
-    getContent
+    getContent,
+    concatList,
+    concatObject,
+    parseJsonBody,
+    parseJsonArray,
+    parseJsonObject,
+    parseJsonSection,
+    parseJsonTitle,
+    parseJsonContent,
+    parseJsonBold,
+    parseJsonItalic,
+    parseJsonCode,
+    parseJsonCodeBlock,
+    parseJsonList,
+    parseJsonUrl,
+    parseJsonImage,
+    parseJsonAlt,
+    parseJsonLink,
+    parseJsonStringQuote,
+    parseJsonInt
     ) where
 
 -- import ParsingLib

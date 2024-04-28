@@ -1,0 +1,7 @@
+<document>
+    <header title="Hello World title">
+    </header>
+    <body>
+        <paragraph>Hello World content</paragraph>
+    </body>
+</document>

@@ -16,7 +16,13 @@ COVERAGE_NAME = MyPandoc-test
 COVERAGE_PATH = \
 	$(DIRECTORY)/hpc/$(REPO)/$(COVERAGE_NAME)/$(COVERAGE_NAME).tix
 
-.PHONY: all clean fclean re tests_run clean_tests
+
+# JSON TESTS
+JSON_TESTER = ./json_ftest.py
+
+JSON_TESTS = Json-FTests/Test.json
+
+.PHONY: all clean fclean re tests_run tests clean_tests
 
 all: $(NAME)
 
@@ -39,7 +45,9 @@ fclean: clean clean_tests
 
 re:	fclean all
 
-tests_run:
+tests_run: tests clean_tests
+
+tests:
 	@echo -ne "\nTests: "
 	@stack test --coverage
 	@mkdir -p test/coverage
@@ -47,8 +55,13 @@ tests_run:
 	@echo -e "\033[92mDone\033[0m"
 
 clean_tests:
-		@echo -ne "Clean tests: "
-		@rm -rf test/coverage
-		@rm -f $(COVERAGE_PATH)
-		@rm -f app/Main
-		@echo -e "\033[92mDone\033[0m"
+	@echo -ne "Clean tests: "
+	@rm -rf test/coverage
+	@rm -f $(COVERAGE_PATH)
+	@rm -f app/Main
+	@echo -e "\033[92mDone\033[0m"
+
+json_tests: $(NAME)
+	@pip install junit-xml
+	@echo -ne "\nJson tests: \n"
+	@$(JSON_TESTER) $(JSON_TESTS) -d

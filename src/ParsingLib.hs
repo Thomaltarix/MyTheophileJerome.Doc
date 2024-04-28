@@ -15,13 +15,18 @@ module ParsingLib (
     parseAndWith,
     parseMany,
     parseSome,
+    parseUntilChar,
     parseUInt,
+    checkNotChar,
     parseInt,
     parseString,
+    checkIfChar,
+    failingParse,
     (<|>),
     parseStringQuote,
+    parseIntString,
+    parseUntilTwoChar,
     parseStringTag,
-    parseIntString
     ) where
 
 import Control.Applicative
@@ -70,6 +75,24 @@ parseChar :: Char -> Parser Char
 parseChar c = Parser p where
     p (x:xs)
         | x == c = Just (c, xs)
+        | otherwise = Nothing
+    p _ = Nothing
+
+failingParse :: Parser Char
+failingParse = Parser p where
+    p _ = Nothing
+
+checkNotChar :: Char -> Parser Char
+checkNotChar c = Parser p where
+    p str@(x:_)
+        | x /= c = Just (c, str)
+        | otherwise = Nothing
+    p _ = Nothing
+
+checkIfChar :: Char -> Parser Char
+checkIfChar c = Parser p where
+    p str@(x:_)
+        | x == c = Just (c, str)
         | otherwise = Nothing
     p _ = Nothing
 
@@ -187,3 +210,17 @@ parseIntString = Parser p where
         Nothing      -> Nothing
     p (x:str) = runParser parseUIntString (x:str)
     p [] = Nothing
+
+parseUntilChar :: Char -> Parser String
+parseUntilChar c = Parser p where
+    p str = case break (==c) str of
+        (quoted, rest) -> Just (quoted, drop 1 rest)
+
+parseUntilTwoChar :: String -> Parser String
+parseUntilTwoChar [] = Parser (\_ -> Nothing)
+parseUntilTwoChar [_] = Parser (\_ -> Nothing)
+parseUntilTwoChar (x:y:_) = Parser p where
+    p str = case break (==x) str of
+        (comprd, rst) -> case stripPrefix [x, y] rst of
+            Just rst' -> Just (comprd, rst')
+            Nothing -> Nothing
