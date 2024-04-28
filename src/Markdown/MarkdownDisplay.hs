@@ -143,15 +143,33 @@ needPrintStartTag (Left data_:_) = symbol data_ == Just "title"
     && dataContent data_ /= Just ""
 needPrintStartTag (Right _:_) = False
 
+getSectionTitle :: [Either Data Object] -> String
+getSectionTitle [] = ""
+getSectionTitle (Left data_@Data{symbol = Just "title"}:_) = "\n"
+getSectionTitle (Left _:_) = ""
+getSectionTitle (Right _:_) = ""
+
 getStartTag :: Object -> Int -> Int -> String
 getStartTag Object {objType = CodeBlockT} _ _ = "```\n"
 getStartTag obj _ nbSection = if needPrintStartTag (datas obj)
-    then replicate nbSection '#' ++ " " else ""
+    then replicate nbSection '#' ++ " " else getSectionTitle (datas obj)
+
+checkOneReturn :: Bool -> [Either Data Object] -> Bool
+checkOneReturn True _ = True
+checkOneReturn _ [] = False
+checkOneReturn _ (Left _:x) = checkOneReturn False x
+checkOneReturn _ (Right Object {objSymbol = Just "link"}:_) = True
+checkOneReturn _ (Right Object {objSymbol = Just "image"}:_) = True
+checkOneReturn _ (Right x:_) = checkOneReturn False (datas x)
 
 handleMarkdownObject :: Object -> Bool -> Bool -> Int -> String -> String
-handleMarkdownObject obj@Object {objType = ListT, objSymbol = Nothing} oneReturn list nbSection _ =
-    getMarkdownContent (datas obj) oneReturn list nbSection ++ (if oneReturn then "\n" else "\n\n")
-handleMarkdownObject obj@Object {objType = ListT, objSymbol = Just "list"} _ _ nbSection _ =
+handleMarkdownObject obj@Object {objType = ListT, objSymbol = Nothing}
+    oneReturn list nbSection _ =
+    getMarkdownContent (datas obj) (checkOneReturn oneReturn (datas obj))
+        list nbSection ++ (if checkOneReturn oneReturn (datas obj)
+            then "\n" else "\n\n")
+handleMarkdownObject obj@Object {objType = ListT, objSymbol = Just "list"}
+    _ _ nbSection _ =
     getMarkdownContent (datas obj) True True nbSection ++ "\n"
 handleMarkdownObject obj@Object {objType = CodeBlockT} _ _ _ _ =
     "```\n" ++ getMarkdownContent (datas obj) True False 0 ++ "```\n"
@@ -186,5 +204,5 @@ printMarkdown handle dataStruct =
     let (_, endTag) = getMarkdownObjectTag (Object SectionT Nothing []) in
     let markdown = printMarkdownHeader (header dataStruct) True ++
             getMarkdownObject (content dataStruct) False False 1 ++
-            endTag ++ "\n" in
+            endTag in
     printString handle markdown
