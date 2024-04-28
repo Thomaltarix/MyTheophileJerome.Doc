@@ -110,32 +110,27 @@ printEndSection handle_ obj endTag nbReturn = let data_ = datas obj in
 calcNbReturnHelper :: [Either Data Object] -> Int
 calcNbReturnHelper [] = 2
 calcNbReturnHelper (Left _:x) = calcNbReturnHelper x
-calcNbReturnHelper (Right xs:_) = case objSymbol xs of
-    Just "link" -> 1
-    Just "image" -> 1
-    Just "list" -> 1
-    _ -> calcNbReturnHelper (datas xs)
+calcNbReturnHelper (Right Object {objSymbol = Just "link"}:_) = 1
+calcNbReturnHelper (Right Object {objSymbol = Just "image"}:_) = 1
+calcNbReturnHelper (Right Object {objSymbol = Just "list"}:_) = 1
+calcNbReturnHelper (Right x:_) = calcNbReturnHelper (datas x)
 
 calcNbReturn :: Int -> Object -> Int
 calcNbReturn 1 _ = 0
 calcNbReturn 0 _ = 1
-calcNbReturn _ obj = case objType obj of
-    CodeBlockT -> 0
-    _ -> calcNbReturnHelper (datas obj)
+calcNbReturn _ Object {objType = CodeBlockT} = 0
+calcNbReturn _ obj = calcNbReturnHelper (datas obj)
 
 isList :: Bool -> Object -> Bool
 isList True _ = True
-isList False obj = case objType obj of
-    ListT -> case objSymbol obj of
-        Just "list" -> True
-        _ -> False
-    _ -> False
+isList False Object {objType = ListT, objSymbol = Just "list"} = True
+isList _ _ = False
 
 getUrl :: [Either Data Object] -> String
 getUrl [] = ""
-getUrl (Left data_:x) = if symbol data_ == Just "url"
-                                then myFromJustString (dataContent data_)
-                                else getUrl x
+getUrl (Left data_@Data {symbol = Just "url"}:_) =
+    myFromJustString (dataContent data_)
+getUrl (Left _:xs) = getUrl xs
 getUrl (Right _:x) = getUrl x
 
 getContentUrl :: [Either Data Object] -> String
